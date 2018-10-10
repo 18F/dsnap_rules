@@ -23,3 +23,30 @@ class AdverseEffectRule(Rule):
             or self.target["has_inaccessible_liquid_resources"]
             or self.target["incurred_deductible_disaster_expenses"],
             self.name)
+
+
+class IncomeAndResourceRule(Rule):
+    """
+    The household's take-home income received (or expected to be received)
+    during the benefit period plus its accessible liquid resources minus
+    disaster related expenses (unreimbursed disaster related expenses paid or
+    anticipated to be paid out of pocket during the disaster benefit period)
+    shall not exceed the Disaster Gross Income Limit (DGIL).
+    """
+
+    def execute(self):
+        return (
+            self.disaster_gross_income <= self.disaster_gross_income_limit,
+            self.name)
+
+    @property
+    def disaster_gross_income(self):
+        return (
+            self.target["total_take_home_income"]
+            + self.target["accessible_liquid_resources"]
+            - self.target["deductible_disaster_expenses"]
+        )
+
+    @property
+    def disaster_gross_income_limit(self):
+        return 1000

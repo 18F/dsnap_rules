@@ -3,6 +3,7 @@ from copy import deepcopy
 from dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
+    IncomeAndResourceRule,
 )
 
 STOCK_TARGET = {
@@ -58,3 +59,15 @@ def test_combined_identity_and_authorized():
     target["is_authorized_representative"] = True
     target["is_identity_verified"] = True
     assert AdverseEffectRule(target) and AuthorizedRule(target)
+
+
+def test_income_and_resource():
+    target = {
+        "total_take_home_income": 200,
+        "accessible_liquid_resources": 300,
+        "deductible_disaster_expenses": 50,
+    }
+    assert IncomeAndResourceRule(target)
+
+    target["total_take_home_income"] = 2000
+    assert not IncomeAndResourceRule(target)

@@ -1,3 +1,4 @@
+from dgi_calculators import get_dgi_calculator
 from rules import Rule
 
 
@@ -49,4 +50,5 @@ class IncomeAndResourceRule(Rule):
 
     @property
     def disaster_gross_income_limit(self):
-        return 1000
+        dgi_calculator = get_dgi_calculator(self.target["state_or_territory"])
+        return dgi_calculator.get_limit(self.target["size_of_household"])

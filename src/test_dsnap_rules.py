@@ -66,8 +66,10 @@ def test_income_and_resource():
         "total_take_home_income": 200,
         "accessible_liquid_resources": 300,
         "deductible_disaster_expenses": 50,
+        "state_or_territory": "CA",
+        "size_of_household": 4
     }
     assert IncomeAndResourceRule(target)
 
-    target["total_take_home_income"] = 2000
+    target["total_take_home_income"] = 5000
     assert not IncomeAndResourceRule(target)

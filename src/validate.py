@@ -16,6 +16,7 @@ SCHEMA = {
         "total_take_home_income": {"type": "number", "minimum": 0},
         "accessible_liquid_resources": {"type": "number", "minimum": 0},
         "deductible_disaster_expenses": {"type": "number", "minimum": 0},
+        "state_or_territory": {"type": "string"},
     },
     "required": [
         "is_head_of_household",

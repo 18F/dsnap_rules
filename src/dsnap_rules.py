@@ -5,8 +5,8 @@ from rules import Rule
 class AuthorizedRule(Rule):
     def execute(self):
         return (
-            self.target["is_head_of_household"]
-            or self.target["is_authorized_representative"],
+            self.payload["is_head_of_household"]
+            or self.payload["is_authorized_representative"],
             self.name)
 
 
@@ -20,9 +20,9 @@ class AdverseEffectRule(Rule):
 
     def execute(self):
         return (
-            self.target["has_lost_or_inaccessible_income"]
-            or self.target["has_inaccessible_liquid_resources"]
-            or self.target["incurred_deductible_disaster_expenses"],
+            self.payload["has_lost_or_inaccessible_income"]
+            or self.payload["has_inaccessible_liquid_resources"]
+            or self.payload["incurred_deductible_disaster_expenses"],
             self.name)
 
 
@@ -43,12 +43,12 @@ class IncomeAndResourceRule(Rule):
     @property
     def disaster_gross_income(self):
         return (
-            self.target["total_take_home_income"]
-            + self.target["accessible_liquid_resources"]
-            - self.target["deductible_disaster_expenses"]
+            self.payload["total_take_home_income"]
+            + self.payload["accessible_liquid_resources"]
+            - self.payload["deductible_disaster_expenses"]
         )
 
     @property
     def disaster_gross_income_limit(self):
-        dgi_calculator = get_dgi_calculator(self.target["state_or_territory"])
-        return dgi_calculator.get_limit(self.target["size_of_household"])
+        dgi_calculator = get_dgi_calculator(self.payload["state_or_territory"])
+        return dgi_calculator.get_limit(self.payload["size_of_household"])

@@ -6,7 +6,7 @@ from dsnap_rules import (
     IncomeAndResourceRule,
 )
 
-STOCK_TARGET = {
+STOCK_PAYLOAD = {
     "is_head_of_household": False,
     "is_authorized_representative": False,
     "has_lost_or_inaccessible_income": False,
@@ -16,60 +16,60 @@ STOCK_TARGET = {
 
 
 def test_authorized_rule():
-    target = deepcopy(STOCK_TARGET)
+    payload = deepcopy(STOCK_PAYLOAD)
 
-    target["is_head_of_household"] = False
-    target["is_authorized_representative"] = False
-    assert not AuthorizedRule(target)
+    payload["is_head_of_household"] = False
+    payload["is_authorized_representative"] = False
+    assert not AuthorizedRule(payload)
 
-    target["is_head_of_household"] = True
-    target["is_authorized_representative"] = False
-    assert AuthorizedRule(target)
+    payload["is_head_of_household"] = True
+    payload["is_authorized_representative"] = False
+    assert AuthorizedRule(payload)
 
-    target["is_head_of_household"] = False
-    target["is_authorized_representative"] = True
-    assert AuthorizedRule(target)
+    payload["is_head_of_household"] = False
+    payload["is_authorized_representative"] = True
+    assert AuthorizedRule(payload)
 
-    target["is_head_of_household"] = True
-    target["is_authorized_representative"] = True
-    assert AuthorizedRule(target)
+    payload["is_head_of_household"] = True
+    payload["is_authorized_representative"] = True
+    assert AuthorizedRule(payload)
 
 
 def test_adverse_effect_rule():
-    target = deepcopy(STOCK_TARGET)
+    payload = deepcopy(STOCK_PAYLOAD)
 
-    target["has_lost_or_inaccessible_income"] = False
-    target["has_inaccessible_liquid_resources"] = False
-    target["incurred_deductible_disaster_expenses"] = False
-    assert not AdverseEffectRule(target)
+    payload["has_lost_or_inaccessible_income"] = False
+    payload["has_inaccessible_liquid_resources"] = False
+    payload["incurred_deductible_disaster_expenses"] = False
+    assert not AdverseEffectRule(payload)
 
-    target["has_lost_or_inaccessible_income"] = True
-    target["has_inaccessible_liquid_resources"] = False
-    target["incurred_deductible_disaster_expenses"] = False
-    assert AdverseEffectRule(target)
+    payload["has_lost_or_inaccessible_income"] = True
+    payload["has_inaccessible_liquid_resources"] = False
+    payload["incurred_deductible_disaster_expenses"] = False
+    assert AdverseEffectRule(payload)
 
 
 def test_combined_identity_and_authorized():
-    target = deepcopy(STOCK_TARGET)
-    target["has_lost_or_inaccessible_income"] = False
-    target["incurred_deductible_disaster_expenses"] = True
-    target["has_inaccessible_liquid_resources"] = False
+    payload = deepcopy(STOCK_PAYLOAD)
+    payload["has_lost_or_inaccessible_income"] = False
+    payload["incurred_deductible_disaster_expenses"] = True
+    payload["has_inaccessible_liquid_resources"] = False
 
-    target["is_head_of_household"] = True
-    target["is_authorized_representative"] = True
-    target["is_identity_verified"] = True
-    assert AdverseEffectRule(target) and AuthorizedRule(target)
+    payload["is_head_of_household"] = True
+    payload["is_authorized_representative"] = True
+    payload["is_identity_verified"] = True
+    assert AdverseEffectRule(payload) and AuthorizedRule(payload)
 
 
 def test_income_and_resource():
-    target = {
+    payload = {
         "total_take_home_income": 200,
         "accessible_liquid_resources": 300,
         "deductible_disaster_expenses": 50,
         "state_or_territory": "CA",
         "size_of_household": 4
     }
-    assert IncomeAndResourceRule(target)
+    assert IncomeAndResourceRule(payload)
 
-    target["total_take_home_income"] = 5000
-    assert not IncomeAndResourceRule(target)
+    payload["total_take_home_income"] = 5000
+    assert not IncomeAndResourceRule(payload)

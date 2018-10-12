@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 
 
 class Rule(metaclass=ABCMeta):
-    def __init__(self, target, name=None):
-        self.target = target
+    def __init__(self, payload, name=None):
+        self.payload = payload
         self.name = name
 
     def __bool__(self):

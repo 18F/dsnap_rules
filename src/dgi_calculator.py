@@ -24,6 +24,8 @@ def get_dgi_calculator(state_or_territory, region_category=None):
 
 class DisasterGrossIncomeCalculator:
     def __init__(self, limits, overflow_rate):
+        if any(x > y for x, y in zip(limits, limits[1:])):
+            raise ValueError("Limits must be in ascending order")
         self.limits = limits
         self.overflow_rate = overflow_rate
 

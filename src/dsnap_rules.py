@@ -1,4 +1,4 @@
-from dgi_calculators import get_dgi_calculator
+from dgi_calculator import get_dgi_calculator
 from rules import Rule
 
 

@@ -1,7 +1,4 @@
-from abc import ABCMeta, abstractmethod
-
-
-class Rule(metaclass=ABCMeta):
+class Rule:
     def __init__(self, payload, name=None):
         self.payload = payload
         self.name = name
@@ -10,6 +7,5 @@ class Rule(metaclass=ABCMeta):
         result, *rest = self.execute()
         return result
 
-    @abstractmethod
     def execute(self):
         pass

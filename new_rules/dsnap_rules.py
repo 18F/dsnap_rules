@@ -4,10 +4,13 @@ from rules import Rule
 
 class AuthorizedRule(Rule):
     def execute(self):
-        return (
-            self.payload["is_head_of_household"]
-            or self.payload["is_authorized_representative"],
-            self.name)
+        result = (self.payload["is_head_of_household"]
+                  or self.payload["is_authorized_representative"])
+        if result:
+            finding = "Either head of household or authorized representative"
+        else:
+            finding = "Neither head of household nor authorized representative"
+        return (result, finding)
 
 
 class AdverseEffectRule(Rule):
@@ -19,11 +22,15 @@ class AdverseEffectRule(Rule):
     """
 
     def execute(self):
-        return (
+        result = (
             self.payload["has_lost_or_inaccessible_income"]
             or self.payload["has_inaccessible_liquid_resources"]
-            or self.payload["incurred_deductible_disaster_expenses"],
-            self.name)
+            or self.payload["incurred_deductible_disaster_expenses"])
+        if result:
+            finding = "Experienced disaster-related adverse effects"
+        else:
+            finding = "Did not experience any disaster-related adverse effect"
+        return (result, finding)
 
 
 class IncomeAndResourceRule(Rule):
@@ -36,9 +43,18 @@ class IncomeAndResourceRule(Rule):
     """
 
     def execute(self):
-        return (
-            self.disaster_gross_income <= self.disaster_gross_income_limit,
-            self.name)
+        result = self.disaster_gross_income <= self.disaster_gross_income_limit
+        if result:
+            finding = (
+                f"Gross income {self.disaster_gross_income} within limit of "
+                f"{self.disaster_gross_income_limit}"
+            )
+        else:
+            finding = (
+                f"Gross income {self.disaster_gross_income} exceeds limit of "
+                f"{self.disaster_gross_income_limit}"
+            )
+        return (result, finding)
 
     @property
     def disaster_gross_income(self):

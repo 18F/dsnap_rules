@@ -1,25 +1,16 @@
-from copy import deepcopy
-
 from dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     IncomeAndResourceRule,
 )
 
-STOCK_PAYLOAD = {
-    "is_head_of_household": False,
-    "is_authorized_representative": False,
-    "has_lost_or_inaccessible_income": False,
-    "has_inaccessible_liquid_resources": False,
-    "incurred_deductible_disaster_expenses": False,
-}
-
 
 def test_authorized_rule():
-    payload = deepcopy(STOCK_PAYLOAD)
+    payload = {
+        "is_head_of_household": False,
+        "is_authorized_representative": False,
+    }
 
-    payload["is_head_of_household"] = False
-    payload["is_authorized_representative"] = False
     assert_results(AuthorizedRule, payload, False,
                    "Neither head of household nor authorized representative")
 
@@ -35,11 +26,12 @@ def test_authorized_rule():
 
 
 def test_adverse_effect_rule():
-    payload = deepcopy(STOCK_PAYLOAD)
+    payload = {
+        "has_lost_or_inaccessible_income": False,
+        "has_inaccessible_liquid_resources": False,
+        "incurred_deductible_disaster_expenses": False,
+    }
 
-    payload["has_lost_or_inaccessible_income"] = False
-    payload["has_inaccessible_liquid_resources"] = False
-    payload["incurred_deductible_disaster_expenses"] = False
     assert_results(AdverseEffectRule, payload, False,
                    "Did not experience any disaster-related adverse effect")
 
@@ -51,14 +43,13 @@ def test_adverse_effect_rule():
 
 
 def test_combined_identity_and_authorized():
-    payload = deepcopy(STOCK_PAYLOAD)
-    payload["has_lost_or_inaccessible_income"] = False
-    payload["incurred_deductible_disaster_expenses"] = True
-    payload["has_inaccessible_liquid_resources"] = False
-
-    payload["is_head_of_household"] = True
-    payload["is_authorized_representative"] = True
-    payload["is_identity_verified"] = True
+    payload = {
+        "is_head_of_household": True,
+        "is_authorized_representative": False,
+        "has_lost_or_inaccessible_income": False,
+        "has_inaccessible_liquid_resources": True,
+        "incurred_deductible_disaster_expenses": False,
+    }
     assert AdverseEffectRule(payload) and AuthorizedRule(payload)
 
 

@@ -1,3 +1,5 @@
+from unittest.mock import patch, Mock
+
 from dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
@@ -53,12 +55,16 @@ def test_combined_identity_and_authorized():
     assert AdverseEffectRule(payload) and AuthorizedRule(payload)
 
 
-def test_income_and_resource():
+@patch('dgi_calculator.get_dgi_calculator')
+def test_income_and_resource(get_dgi_calculator_mock):
+    DGI_LIMIT = 500
+    get_dgi_calculator_mock.return_value.get_limit.return_value = DGI_LIMIT
+
     TOTAL_TAKE_HOME_INCOME = 200
     ACCESSIBLE_LIQUID_RESOURCES = 300
     DEDUCTIBLE_DISASTER_EXPENSES = 50
 
-    VERY_LARGE_TAKE_HOME_INCOME = 5000
+    VERY_LARGE_TAKE_HOME_INCOME = 2 * DGI_LIMIT
 
     payload = {
         "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
@@ -70,13 +76,14 @@ def test_income_and_resource():
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
     assert_results(IncomeAndResourceRule, payload, True,
-                   f"Gross income {gross_income} within limit of 2818")
+                   f"Gross income {gross_income} within limit of {DGI_LIMIT}")
 
+    get_dgi_calculator_mock.assert_called()
     payload["total_take_home_income"] = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
     assert_results(IncomeAndResourceRule, payload, False,
-                   f"Gross income {gross_income} exceeds limit of 2818")
+                   f"Gross income {gross_income} exceeds limit of {DGI_LIMIT}")
 
 
 def assert_results(rule, payload, expected_result, expected_finding):

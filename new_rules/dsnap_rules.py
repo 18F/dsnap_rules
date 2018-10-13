@@ -1,4 +1,4 @@
-from dgi_calculator import get_dgi_calculator
+import dgi_calculator
 from rules import Rule
 
 
@@ -66,5 +66,5 @@ class IncomeAndResourceRule(Rule):
 
     @property
     def disaster_gross_income_limit(self):
-        dgi_calculator = get_dgi_calculator(self.payload["state_or_territory"])
-        return dgi_calculator.get_limit(self.payload["size_of_household"])
+        calculator = dgi_calculator.get_dgi_calculator(self.payload["state_or_territory"])
+        return calculator.get_limit(self.payload["size_of_household"])

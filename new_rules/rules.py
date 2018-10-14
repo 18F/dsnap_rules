@@ -7,3 +7,17 @@ class Rule:
     """
     def execute(self, payload):
         pass
+
+
+class And(Rule):
+    def __init__(self, *rules):
+        self.rules = rules
+
+    def execute(self, payload):
+        overall_result = True
+        overall_findings = []
+        for rule in self.rules:
+            result, finding = rule.execute(payload)
+            overall_result = overall_result and result
+            overall_findings.append(finding)
+        return overall_result, overall_findings

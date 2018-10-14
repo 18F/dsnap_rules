@@ -52,7 +52,9 @@ def test_combined_identity_and_authorized():
         "has_inaccessible_liquid_resources": True,
         "incurred_deductible_disaster_expenses": False,
     }
-    assert AdverseEffectRule(payload) and AuthorizedRule(payload)
+    authorized_result, *rest = AuthorizedRule().execute(payload)
+    adverse_effect_result, *rest = AdverseEffectRule().execute(payload)
+    assert authorized_result and adverse_effect_result
 
 
 @patch('dgi_calculator.get_dgi_calculator')
@@ -87,6 +89,6 @@ def test_income_and_resource(get_dgi_calculator_mock):
 
 
 def assert_results(rule, payload, expected_result, expected_finding):
-    actual_result, actual_finding = rule(payload).execute()
+    actual_result, actual_finding = rule().execute(payload)
     assert actual_result == expected_result
     assert actual_finding == expected_finding

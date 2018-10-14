@@ -3,9 +3,9 @@ from rules import Rule
 
 
 class AuthorizedRule(Rule):
-    def execute(self):
-        result = (self.payload["is_head_of_household"]
-                  or self.payload["is_authorized_representative"])
+    def execute(self, payload):
+        result = (payload["is_head_of_household"]
+                  or payload["is_authorized_representative"])
         if result:
             finding = "Either head of household or authorized representative"
         else:
@@ -21,11 +21,11 @@ class AdverseEffectRule(Rule):
     eligible.
     """
 
-    def execute(self):
+    def execute(self, payload):
         result = (
-            self.payload["has_lost_or_inaccessible_income"]
-            or self.payload["has_inaccessible_liquid_resources"]
-            or self.payload["incurred_deductible_disaster_expenses"])
+            payload["has_lost_or_inaccessible_income"]
+            or payload["has_inaccessible_liquid_resources"]
+            or payload["incurred_deductible_disaster_expenses"])
         if result:
             finding = "Experienced disaster-related adverse effects"
         else:
@@ -42,29 +42,30 @@ class IncomeAndResourceRule(Rule):
     shall not exceed the Disaster Gross Income Limit (DGIL).
     """
 
-    def execute(self):
-        result = self.disaster_gross_income <= self.disaster_gross_income_limit
+    def execute(self, payload):
+        disaster_gross_income = self.disaster_gross_income(payload)
+        disaster_gross_income_limit = self.disaster_gross_income_limit(payload)
+        result = disaster_gross_income <= disaster_gross_income_limit
         if result:
             finding = (
-                f"Gross income {self.disaster_gross_income} within limit of "
-                f"{self.disaster_gross_income_limit}"
+                f"Gross income {disaster_gross_income} within limit of "
+                f"{disaster_gross_income_limit}"
             )
         else:
             finding = (
-                f"Gross income {self.disaster_gross_income} exceeds limit of "
-                f"{self.disaster_gross_income_limit}"
+                f"Gross income {disaster_gross_income} exceeds limit of "
+                f"{disaster_gross_income_limit}"
             )
         return (result, finding)
 
-    @property
-    def disaster_gross_income(self):
+    def disaster_gross_income(self, payload):
         return (
-            self.payload["total_take_home_income"]
-            + self.payload["accessible_liquid_resources"]
-            - self.payload["deductible_disaster_expenses"]
+            payload["total_take_home_income"]
+            + payload["accessible_liquid_resources"]
+            - payload["deductible_disaster_expenses"]
         )
 
-    @property
-    def disaster_gross_income_limit(self):
-        calculator = dgi_calculator.get_dgi_calculator(self.payload["state_or_territory"])
-        return calculator.get_limit(self.payload["size_of_household"])
+    def disaster_gross_income_limit(self, payload):
+        calculator = dgi_calculator.get_dgi_calculator(
+                        payload["state_or_territory"])
+        return calculator.get_limit(payload["size_of_household"])

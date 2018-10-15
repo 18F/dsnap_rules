@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 
-from rules import And
-from dsnap_rules import (
+from new_rules.rules import And
+from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     IncomeAndResourceRule,
@@ -84,7 +84,7 @@ def test_the_and_rule():
         ])
 
 
-@patch('dgi_calculator.get_dgi_calculator')
+@patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
 def test_income_and_resource(get_dgi_calculator_mock):
     DGI_LIMIT = 500
     get_dgi_calculator_mock.return_value.get_limit.return_value = DGI_LIMIT

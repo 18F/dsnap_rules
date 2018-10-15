@@ -1,6 +1,6 @@
 import pytest
 
-from dgi_calculator import DisasterGrossIncomeCalculator
+from new_rules.dsnap.dgi_calculator import DisasterGrossIncomeCalculator
 
 
 def test_constructor():

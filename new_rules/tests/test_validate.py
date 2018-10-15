@@ -1,7 +1,7 @@
 import pytest
 
 from jsonschema.exceptions import ValidationError
-from validate import validate
+from new_rules.validate import validate
 
 
 def test_good_data():

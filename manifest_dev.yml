@@ -1,0 +1,4 @@
+---
+applications:
+- name: new_rules
+  buildpack: python_buildpack

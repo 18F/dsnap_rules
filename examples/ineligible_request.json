@@ -1,0 +1,12 @@
+    {
+        "is_head_of_household": false,
+        "is_authorized_representative": false,
+        "has_lost_or_inaccessible_income": false,
+        "has_inaccessible_liquid_resources": true,
+        "incurred_deductible_disaster_expenses": false,
+        "total_take_home_income": 800,
+        "accessible_liquid_resources": 0,
+        "deductible_disaster_expenses": 0,
+        "state_or_territory": "CA",
+        "size_of_household": 4
+    }

@@ -1,4 +1,5 @@
 # Eligibility Rules
+[![CircleCI](https://circleci.com/gh/18F/new_rules.svg?style=svg)](https://circleci.com/gh/18F/new_rules)
 
 ## Contributing
 

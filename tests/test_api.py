@@ -52,7 +52,15 @@ def test_basic_eligible_payload(client):
     response = client.post('/', json=payload)
 
     assert response.status_code == 200
-    assert response.json["eligible"]
+    assert response.json == {
+        "eligible": True,
+        "findings": [
+            "Either head of household or authorized representative",
+            "Experienced disaster-related adverse effects",
+            "Gross income 800 within limit of 2818"
+        ],
+        "metrics": {}
+    }
 
 
 def test_basic_ineligible_payload(client):
@@ -62,4 +70,13 @@ def test_basic_ineligible_payload(client):
     response = client.post('/', json=payload)
 
     assert response.status_code == 200
+    assert response.json == {
+        "eligible": False,
+        "findings": [
+            "Neither head of household nor authorized representative",
+            "Experienced disaster-related adverse effects",
+            "Gross income 800 within limit of 2818"
+        ],
+        "metrics": {}
+    }
     assert not response.json["eligible"]

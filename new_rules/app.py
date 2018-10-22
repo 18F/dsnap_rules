@@ -23,13 +23,14 @@ def run():
         response.status_code = 400
         return response
 
-    result, findings = And(
+    result = And(
             AuthorizedRule(),
             AdverseEffectRule(),
             IncomeAndResourceRule()
     ).execute(data)
 
     return jsonify(
-        eligible=result,
-        findings=findings
+        eligible=result.successful,
+        findings=result.findings,
+        metrics=result.metrics
     )

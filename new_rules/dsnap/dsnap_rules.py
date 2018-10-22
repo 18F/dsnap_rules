@@ -1,5 +1,5 @@
 from . import dgi_calculator
-from ..rules import Rule
+from ..rules import Rule, Result
 
 
 class AuthorizedRule(Rule):
@@ -10,7 +10,7 @@ class AuthorizedRule(Rule):
             finding = "Either head of household or authorized representative"
         else:
             finding = "Neither head of household nor authorized representative"
-        return (result, finding)
+        return Result(result, [finding])
 
 
 class AdverseEffectRule(Rule):
@@ -30,7 +30,7 @@ class AdverseEffectRule(Rule):
             finding = "Experienced disaster-related adverse effects"
         else:
             finding = "Did not experience any disaster-related adverse effect"
-        return (result, finding)
+        return Result(result, [finding])
 
 
 class IncomeAndResourceRule(Rule):
@@ -56,7 +56,7 @@ class IncomeAndResourceRule(Rule):
                 f"Gross income {disaster_gross_income} exceeds limit of "
                 f"{disaster_gross_income_limit}"
             )
-        return (result, finding)
+        return Result(result, [finding])
 
     def disaster_gross_income(self, payload):
         return (

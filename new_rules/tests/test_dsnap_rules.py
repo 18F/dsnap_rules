@@ -1,6 +1,6 @@
 from unittest.mock import patch, Mock
 
-from new_rules.rules import And
+from new_rules.rules import And, Result
 from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
@@ -14,18 +14,30 @@ def test_authorized_rule():
         "is_authorized_representative": False,
     }
 
-    assert_results(AuthorizedRule(), payload, False,
-                   "Neither head of household nor authorized representative")
+    assert_result(
+        AuthorizedRule(),
+        payload,
+        Result(False,
+               ["Neither head of household nor authorized representative"])
+    )
 
     payload["is_head_of_household"] = True
     payload["is_authorized_representative"] = False
-    assert_results(AuthorizedRule(), payload, True,
-                   "Either head of household or authorized representative")
+    assert_result(
+        AuthorizedRule(),
+        payload,
+        Result(True,
+               ["Either head of household or authorized representative"])
+    )
 
     payload["is_head_of_household"] = False
     payload["is_authorized_representative"] = True
-    assert_results(AuthorizedRule(), payload, True,
-                   "Either head of household or authorized representative")
+    assert_result(
+        AuthorizedRule(),
+        payload,
+        Result(True,
+               ["Either head of household or authorized representative"])
+    )
 
 
 def test_adverse_effect_rule():
@@ -35,14 +47,22 @@ def test_adverse_effect_rule():
         "incurred_deductible_disaster_expenses": False,
     }
 
-    assert_results(AdverseEffectRule(), payload, False,
-                   "Did not experience any disaster-related adverse effect")
+    assert_result(
+        AdverseEffectRule(),
+        payload,
+        Result(False,
+               ["Did not experience any disaster-related adverse effect"])
+    )
 
     payload["has_lost_or_inaccessible_income"] = True
     payload["has_inaccessible_liquid_resources"] = False
     payload["incurred_deductible_disaster_expenses"] = False
-    assert_results(AdverseEffectRule(), payload, True,
-                   "Experienced disaster-related adverse effects")
+    assert_result(
+        AdverseEffectRule(),
+        payload,
+        Result(True,
+               ["Experienced disaster-related adverse effects"])
+    )
 
 
 def test_the_and_rule():
@@ -53,35 +73,32 @@ def test_the_and_rule():
         "has_inaccessible_liquid_resources": True,
         "incurred_deductible_disaster_expenses": False,
     }
-    assert_results(
+    assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
-        True,
-        [
-            "Either head of household or authorized representative",
-            "Experienced disaster-related adverse effects",
-        ])
+        Result(True,
+               ["Either head of household or authorized representative",
+                "Experienced disaster-related adverse effects"])
+    )
 
     payload["has_inaccessible_liquid_resources"] = False
-    assert_results(
+    assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
-        False,
-        [
-            "Either head of household or authorized representative",
-            "Did not experience any disaster-related adverse effect",
-        ])
+        Result(False,
+               ["Either head of household or authorized representative",
+                "Did not experience any disaster-related adverse effect"])
+    )
 
     payload["is_head_of_household"] = False
     payload["has_inaccessible_liquid_resources"] = True
-    assert_results(
+    assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
-        False,
-        [
-            "Neither head of household nor authorized representative",
-            "Experienced disaster-related adverse effects",
-        ])
+        Result(False,
+               ["Neither head of household nor authorized representative",
+                "Experienced disaster-related adverse effects"])
+    )
 
 
 @patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
@@ -104,18 +121,27 @@ def test_income_and_resource(get_dgi_calculator_mock):
     }
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
-    assert_results(IncomeAndResourceRule(), payload, True,
-                   f"Gross income {gross_income} within limit of {DGI_LIMIT}")
+    assert_result(
+        IncomeAndResourceRule(),
+        payload,
+        Result(True,
+               [f"Gross income {gross_income} within limit of {DGI_LIMIT}"])
+    )
 
     get_dgi_calculator_mock.assert_called()
     payload["total_take_home_income"] = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
-    assert_results(IncomeAndResourceRule(), payload, False,
-                   f"Gross income {gross_income} exceeds limit of {DGI_LIMIT}")
+    assert_result(
+        IncomeAndResourceRule(),
+        payload,
+        Result(False,
+               [f"Gross income {gross_income} exceeds limit of {DGI_LIMIT}"])
+    )
 
 
-def assert_results(rule, payload, expected_result, expected_finding):
-    actual_result, actual_finding = rule.execute(payload)
-    assert actual_result == expected_result
-    assert actual_finding == expected_finding
+def assert_result(rule, payload, expected_result):
+    actual_result = rule.execute(payload)
+    assert actual_result.successful == expected_result.successful
+    assert actual_result.findings == expected_result.findings
+    assert actual_result.metrics == expected_result.metrics

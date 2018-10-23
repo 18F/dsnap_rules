@@ -18,7 +18,8 @@ def test_authorized_rule():
         AuthorizedRule(),
         payload,
         Result(False,
-               ["Neither head of household nor authorized representative"])
+               findings=[
+                   "Neither head of household nor authorized representative"])
     )
 
     payload["is_head_of_household"] = True
@@ -27,7 +28,8 @@ def test_authorized_rule():
         AuthorizedRule(),
         payload,
         Result(True,
-               ["Either head of household or authorized representative"])
+               findings=[
+                   "Either head of household or authorized representative"])
     )
 
     payload["is_head_of_household"] = False
@@ -36,7 +38,8 @@ def test_authorized_rule():
         AuthorizedRule(),
         payload,
         Result(True,
-               ["Either head of household or authorized representative"])
+               findings=[
+                   "Either head of household or authorized representative"])
     )
 
 
@@ -51,7 +54,8 @@ def test_adverse_effect_rule():
         AdverseEffectRule(),
         payload,
         Result(False,
-               ["Did not experience any disaster-related adverse effect"])
+               findings=[
+                   "Did not experience any disaster-related adverse effect"])
     )
 
     payload["has_lost_or_inaccessible_income"] = True
@@ -61,7 +65,8 @@ def test_adverse_effect_rule():
         AdverseEffectRule(),
         payload,
         Result(True,
-               ["Experienced disaster-related adverse effects"])
+               findings=[
+                   "Experienced disaster-related adverse effects"])
     )
 
 
@@ -77,8 +82,9 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(True,
-               ["Either head of household or authorized representative",
-                "Experienced disaster-related adverse effects"])
+               findings=[
+                   "Either head of household or authorized representative",
+                   "Experienced disaster-related adverse effects"])
     )
 
     payload["has_inaccessible_liquid_resources"] = False
@@ -86,8 +92,9 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(False,
-               ["Either head of household or authorized representative",
-                "Did not experience any disaster-related adverse effect"])
+               findings=[
+                   "Either head of household or authorized representative",
+                   "Did not experience any disaster-related adverse effect"])
     )
 
     payload["is_head_of_household"] = False
@@ -96,23 +103,24 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(False,
-               ["Neither head of household nor authorized representative",
-                "Experienced disaster-related adverse effects"])
+               findings=[
+                   "Neither head of household nor authorized representative",
+                   "Experienced disaster-related adverse effects"])
     )
 
 
 @patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
 def test_income_and_resource(get_dgi_calculator_mock):
-    DGI_LIMIT = 500
+    LIMIT = 500
     ALLOTMENT = 100
-    get_dgi_calculator_mock.return_value.get_limit.return_value = DGI_LIMIT
+    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
 
     TOTAL_TAKE_HOME_INCOME = 200
     ACCESSIBLE_LIQUID_RESOURCES = 300
     DEDUCTIBLE_DISASTER_EXPENSES = 50
 
-    VERY_LARGE_TAKE_HOME_INCOME = 2 * DGI_LIMIT
+    VERY_LARGE_TAKE_HOME_INCOME = 2 * LIMIT
 
     payload = {
         "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
@@ -127,8 +135,9 @@ def test_income_and_resource(get_dgi_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(True,
-               [f"Gross income {gross_income} within limit of {DGI_LIMIT}"],
-               {"allotment": 100})
+               findings=[
+                   f"Gross income {gross_income} within limit of {LIMIT}"],
+               metrics={"allotment": 100})
     )
 
     get_dgi_calculator_mock.assert_called()
@@ -139,7 +148,8 @@ def test_income_and_resource(get_dgi_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(False,
-               [f"Gross income {gross_income} exceeds limit of {DGI_LIMIT}"])
+               findings=[
+                   f"Gross income {gross_income} exceeds limit of {LIMIT}"])
     )
 
 

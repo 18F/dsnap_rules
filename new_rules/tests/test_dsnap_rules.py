@@ -137,7 +137,7 @@ def test_income_and_resource(get_dgi_calculator_mock):
         Result(True,
                findings=[
                    f"Gross income {gross_income} within limit of {LIMIT}"],
-               metrics={"allotment": 100})
+               metrics={"allotment": ALLOTMENT})
     )
 
     get_dgi_calculator_mock.assert_called()

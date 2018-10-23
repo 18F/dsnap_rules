@@ -1,4 +1,6 @@
 import copy
+from unittest.mock import patch
+
 import pytest
 
 from new_rules.app import app
@@ -10,7 +12,7 @@ GOOD_PAYLOAD = {
     "has_lost_or_inaccessible_income": False,
     "has_inaccessible_liquid_resources": True,
     "incurred_deductible_disaster_expenses": False,
-    "total_take_home_income": 800,
+    "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
     "deductible_disaster_expenses": 0,
     "state_or_territory": "CA",
@@ -46,7 +48,12 @@ def test_invalid_field_format(client):
         "'2' is not of type 'integer'")
 
 
-def test_basic_eligible_payload(client):
+@patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
+def test_basic_eligible_payload(get_dgi_calculator_mock, client):
+    LIMIT = 500
+    ALLOTMENT = 100
+    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
 
     response = client.post('/', json=payload)
@@ -57,13 +64,19 @@ def test_basic_eligible_payload(client):
         "findings": [
             "Either head of household or authorized representative",
             "Experienced disaster-related adverse effects",
-            "Gross income 800 within limit of 2818"
+            f"Gross income {payload['total_take_home_income']} within "
+            f"limit of {LIMIT}"
         ],
-        "metrics": {"allotment": 642}
+        "metrics": {"allotment": ALLOTMENT}
     }
 
 
-def test_basic_ineligible_payload(client):
+@patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
+def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
+    LIMIT = 500
+    ALLOTMENT = 100
+    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
 
@@ -75,8 +88,9 @@ def test_basic_ineligible_payload(client):
         "findings": [
             "Neither head of household nor authorized representative",
             "Experienced disaster-related adverse effects",
-            "Gross income 800 within limit of 2818"
+            f"Gross income {payload['total_take_home_income']} within "
+            f"limit of {LIMIT}"
         ],
-        "metrics": {"allotment": 642}
+        "metrics": {"allotment": ALLOTMENT}
     }
     assert not response.json["eligible"]

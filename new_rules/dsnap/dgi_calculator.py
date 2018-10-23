@@ -23,11 +23,17 @@ def get_dgi_calculator(state_or_territory, region_category=None):
 
 
 class DisasterGrossIncomeCalculator:
-    def __init__(self, limits, additional_member_rate):
-        if any(x > y for x, y in zip(limits, limits[1:])):
+    def __init__(self, limits_and_allotments, incremental_limit,
+                 incremental_allotment):
+        self.limits, self.allotments = zip(*limits_and_allotments)
+
+        if any(x > y for x, y in zip(self.limits, self.limits[1:])):
             raise ValueError("Limits must be in ascending order")
-        self.limits = limits
-        self.additional_member_rate = additional_member_rate
+        if any(x > y for x, y in zip(self.allotments, self.allotments[1:])):
+            raise ValueError("Allotments must be in ascending order")
+
+        self.incremental_limit = incremental_limit
+        self.incremental_allotment = incremental_allotment
 
     def get_limit(self, size_of_household):
         if size_of_household <= len(self.limits):
@@ -35,90 +41,98 @@ class DisasterGrossIncomeCalculator:
         else:
             return self.limits[-1] + (
                 (size_of_household - len(self.limits))
-                * self.additional_member_rate)
+                * self.incremental_limit)
+
+    def get_allotment(self, size_of_household):
+        if size_of_household <= len(self.allotments):
+            return self.allotments[size_of_household - 1]
+        else:
+            return self.allotments[-1] + (
+                (size_of_household - len(self.allotments))
+                * self.incremental_allotment)
 
 
 DEFAULT_DGICalculator = DisasterGrossIncomeCalculator([
-        1728,
-        2088,
-        2448,
-        2818,
-        3208,
-        3598,
-        3958,
-        4318,
+        (1728, 192),
+        (2088, 353),
+        (2448, 505),
+        (2818, 642),
+        (3208, 762),
+        (3598, 914),
+        (3958, 1011),
+        (4318, 1155),
     ],
-    360)
+    360, 144)
 
 AK_URBAN_DGICalculator = DisasterGrossIncomeCalculator([
-        2427,
-        2877,
-        3327,
-        3777,
-        4227,
-        4688,
-        5138,
-        5588,
+        (2427, 232),
+        (2877, 425),
+        (3327, 609),
+        (3777, 773),
+        (4227, 918),
+        (4688, 1102),
+        (5138, 1218),
+        (5588, 1392),
     ],
-    450)
+    450, 174)
 
 AK_RURAL1_DGICalculator = DisasterGrossIncomeCalculator([
-        2427,
-        2877,
-        3327,
-        3777,
-        4227,
-        4688,
-        5138,
-        5588,
+        (2427, 295),
+        (2877, 542),
+        (3327, 776),
+        (3777, 986),
+        (4227, 1171),
+        (4688, 1405),
+        (5138, 1553),
+        (5588, 1775),
     ],
-    450)
+    450, 222)
 
 AK_RURAL2_DGICalculator = DisasterGrossIncomeCalculator([
-        2427,
-        2877,
-        3327,
-        3777,
-        4227,
-        4688,
-        5138,
-        5588,
+        (2427, 360),
+        (2877, 660),
+        (3327, 945),
+        (3777, 1200),
+        (4227, 1425),
+        (4688, 1711),
+        (5138, 1891),
+        (5588, 2161),
     ],
-    450)
+    450, 270)
 
 
 HI_DGICalculator = DisasterGrossIncomeCalculator([
-        2139,
-        2553,
-        2967,
-        3381,
-        3797,
-        4247,
-        4661,
-        5075,
+        (2139, 358),
+        (2553, 656),
+        (2967, 940),
+        (3381, 1193),
+        (3797, 1417),
+        (4247, 1701),
+        (4661, 1880),
+        (5075, 2148),
     ],
-    415)
+    415, 269)
 
 GU_DGICalculator = DisasterGrossIncomeCalculator([
-        1990,
-        2350,
-        2710,
-        3087,
-        3507,
-        3926,
-        4286,
-        4646,
+        (1990, 283),
+        (2350, 520),
+        (2710, 745),
+        (3087, 946),
+        (3507, 1123),
+        (3926, 1348),
+        (4286, 1490),
+        (4646, 1703),
     ],
-    360)
+    360, 213)
 
 VI_DGICalculator = DisasterGrossIncomeCalculator([
-        1592,
-        1952,
-        2312,
-        2701,
-        3091,
-        3481,
-        3841,
-        4201,
+        (1592, 247),
+        (1952, 454),
+        (2312, 650),
+        (2701, 825),
+        (3091, 980),
+        (3481, 1176),
+        (3841, 1300),
+        (4201, 1485),
     ],
-    360)
+    360, 186)

@@ -104,7 +104,9 @@ def test_the_and_rule():
 @patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
 def test_income_and_resource(get_dgi_calculator_mock):
     DGI_LIMIT = 500
+    ALLOTMENT = 100
     get_dgi_calculator_mock.return_value.get_limit.return_value = DGI_LIMIT
+    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
 
     TOTAL_TAKE_HOME_INCOME = 200
     ACCESSIBLE_LIQUID_RESOURCES = 300
@@ -125,7 +127,8 @@ def test_income_and_resource(get_dgi_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(True,
-               [f"Gross income {gross_income} within limit of {DGI_LIMIT}"])
+               [f"Gross income {gross_income} within limit of {DGI_LIMIT}"],
+               {"allotment": 100})
     )
 
     get_dgi_calculator_mock.assert_called()

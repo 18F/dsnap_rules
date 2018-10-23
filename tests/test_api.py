@@ -59,7 +59,7 @@ def test_basic_eligible_payload(client):
             "Experienced disaster-related adverse effects",
             "Gross income 800 within limit of 2818"
         ],
-        "metrics": {}
+        "metrics": {"allotment": 642}
     }
 
 
@@ -77,6 +77,6 @@ def test_basic_ineligible_payload(client):
             "Experienced disaster-related adverse effects",
             "Gross income 800 within limit of 2818"
         ],
-        "metrics": {}
+        "metrics": {"allotment": 642}
     }
     assert not response.json["eligible"]

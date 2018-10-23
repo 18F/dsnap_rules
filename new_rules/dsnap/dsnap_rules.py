@@ -43,20 +43,22 @@ class IncomeAndResourceRule(Rule):
     """
 
     def execute(self, payload):
-        disaster_gross_income = self.disaster_gross_income(payload)
-        disaster_gross_income_limit = self.disaster_gross_income_limit(payload)
-        result = disaster_gross_income <= disaster_gross_income_limit
+        gross_income = self.disaster_gross_income(payload)
+        income_limit, allotment = self.get_limit_and_allotment(payload)
+        result = gross_income <= income_limit
         if result:
             finding = (
-                f"Gross income {disaster_gross_income} within limit of "
-                f"{disaster_gross_income_limit}"
+                f"Gross income {gross_income} within limit of "
+                f"{income_limit}"
             )
+            metrics = {"allotment": allotment}
         else:
             finding = (
-                f"Gross income {disaster_gross_income} exceeds limit of "
-                f"{disaster_gross_income_limit}"
+                f"Gross income {gross_income} exceeds limit of "
+                f"{income_limit}"
             )
-        return Result(result, [finding])
+            metrics = {}
+        return Result(result, [finding], metrics)
 
     def disaster_gross_income(self, payload):
         return (
@@ -65,7 +67,10 @@ class IncomeAndResourceRule(Rule):
             - payload["deductible_disaster_expenses"]
         )
 
-    def disaster_gross_income_limit(self, payload):
+    def get_limit_and_allotment(self, payload):
         calculator = dgi_calculator.get_dgi_calculator(
                         payload["state_or_territory"])
-        return calculator.get_limit(payload["size_of_household"])
+        return (
+            calculator.get_limit(payload["size_of_household"]),
+            calculator.get_allotment(payload["size_of_household"])
+        )

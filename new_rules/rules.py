@@ -13,7 +13,7 @@ class Rule:
     result.  A payload which is `dict` that contains data attributes
     used by the rule.
     """
-    def execute(self, payload):
+    def execute(self, payload, config):
         pass
 
 
@@ -21,12 +21,12 @@ class And(Rule):
     def __init__(self, *rules):
         self.rules = rules
 
-    def execute(self, payload):
+    def execute(self, payload, config):
         overall_success = True
         overall_findings = []
         overall_metrics = {}
         for rule in self.rules:
-            result = rule.execute(payload)
+            result = rule.execute(payload, config)
             overall_success = overall_success and result.successful
             overall_findings.extend(result.findings)
             overall_metrics.update(result.metrics)

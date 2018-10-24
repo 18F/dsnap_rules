@@ -3,7 +3,7 @@ from ..rules import Rule, Result
 
 
 class AuthorizedRule(Rule):
-    def execute(self, payload):
+    def execute(self, payload, config):
         result = (payload["is_head_of_household"]
                   or payload["is_authorized_representative"])
         if result:
@@ -21,7 +21,7 @@ class AdverseEffectRule(Rule):
     eligible.
     """
 
-    def execute(self, payload):
+    def execute(self, payload, config):
         result = (
             payload["has_lost_or_inaccessible_income"]
             or payload["has_inaccessible_liquid_resources"]
@@ -42,7 +42,7 @@ class IncomeAndResourceRule(Rule):
     shall not exceed the Disaster Gross Income Limit (DGIL).
     """
 
-    def execute(self, payload):
+    def execute(self, payload, config):
         gross_income = self.disaster_gross_income(payload)
         income_limit, allotment = self.get_limit_and_allotment(payload)
         result = gross_income <= income_limit

@@ -1,5 +1,6 @@
 from unittest.mock import patch, Mock
 
+from new_rules.config import get_config
 from new_rules.rules import And, Result
 from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
@@ -154,7 +155,8 @@ def test_income_and_resource(get_dgi_calculator_mock):
 
 
 def assert_result(rule, payload, expected_result):
-    actual_result = rule.execute(payload)
+    config = get_config()
+    actual_result = rule.execute(payload, config)
     assert actual_result.successful == expected_result.successful
     assert actual_result.findings == expected_result.findings
     assert actual_result.metrics == expected_result.metrics

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from jsonschema.exceptions import ValidationError
 
+from new_rules.config import get_config
 from new_rules.validate import validate
 from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
@@ -23,11 +24,13 @@ def run():
         response.status_code = 400
         return response
 
+    config = get_config()
+
     result = And(
             AuthorizedRule(),
             AdverseEffectRule(),
             IncomeAndResourceRule()
-    ).execute(data)
+    ).execute(data, config)
 
     return jsonify(
         eligible=result.successful,

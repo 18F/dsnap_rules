@@ -15,12 +15,24 @@ class Result:
 
 
 class Rule:
-    """Rule is a piece of logic that can be executed with a payload to provide a
-    result.  A payload which is `dict` that contains data attributes
-    used by the rule.
+    """A Rule is a piece of logic that can be executed with a payload and a config
+    to provide a result. A payload is a `dict` that contains data attributes
+    used by the rule. A config is an instance of Config which provides
+    contextual environmental information for the rule.
     """
     def execute(self, payload, config):
         pass
+
+
+class SimplePredicateRule(Rule):
+    """A SimplePredicateRule is a convenience class used when the predicate is
+    simple and the findings for success and failure are static strings.
+    """
+
+    def execute(self, payload, config):
+        result = self.predicate(payload, config)
+        finding = self.success_finding if result else self.failure_finding
+        return Result(result, [finding])
 
 
 class And(Rule):

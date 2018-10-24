@@ -1,58 +1,51 @@
 from . import dgi_calculator
-from ..rules import Rule, Result
+from ..rules import Rule, Result, SimplePredicateRule
 
 
-class AuthorizedRule(Rule):
-    def execute(self, payload, config):
-        result = (payload["is_head_of_household"]
-                  or payload["is_authorized_representative"])
-        if result:
-            finding = "Either head of household or authorized representative"
-        else:
-            finding = "Neither head of household nor authorized representative"
-        return Result(result, [finding])
+class AuthorizedRule(SimplePredicateRule):
+    success_finding = "Either head of household or authorized representative"
+    failure_finding = "Neither head of household nor authorized representative"
+
+    def predicate(self, payload, config):
+        return (payload["is_head_of_household"]
+                or payload["is_authorized_representative"])
 
 
-class AdverseEffectRule(Rule):
+class AdverseEffectRule(SimplePredicateRule):
     """
     Disaster-related adverse effects fall into three categories: loss of
     income, inaccessible resources, and disaster expenses. The household must
     have experienced at least one of these adverse effects in order to be
     eligible.
     """
+    success_finding = "Experienced disaster-related adverse effects"
+    failure_finding = "Did not experience any disaster-related adverse effect"
 
-    def execute(self, payload, config):
-        result = (
+    def predicate(self, payload, config):
+        return (
             payload["has_lost_or_inaccessible_income"]
             or payload["has_inaccessible_liquid_resources"]
             or payload["incurred_deductible_disaster_expenses"])
-        if result:
-            finding = "Experienced disaster-related adverse effects"
-        else:
-            finding = "Did not experience any disaster-related adverse effect"
-        return Result(result, [finding])
 
 
-class ResidencyRule(Rule):
+class ResidencyRule(SimplePredicateRule):
     """
     In most cases, the household must have lived in the disaster area at the
     time of the disaster. States may also choose to extend eligibility to those
     who worked in the disaster area at the time of the disaster.
     """
 
-    def execute(self, payload, config):
-        result = (
+    success_finding = "Resided or worked in disaster area at disaster time"
+    failure_finding = "Did not reside or work in disaster area at disaster "\
+                      "time"
+
+    def predicate(self, payload, config):
+        return (
             payload["resided_in_disaster_area_at_disaster_time"]
             or (
                 payload["worked_in_disaster_area_at_disaster_time"]
                 and config.worked_in_disaster_area_is_dnsap_eligible)
         )
-        if result:
-            finding = "Resided or worked in disaster area at disaster time"
-        else:
-            finding = "Did not reside or work in disaster area at disaster "\
-                      "time"
-        return Result(result, [finding])
 
 
 class IncomeAndResourceRule(Rule):

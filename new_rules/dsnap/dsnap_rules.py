@@ -33,6 +33,28 @@ class AdverseEffectRule(Rule):
         return Result(result, [finding])
 
 
+class ResidencyRule(Rule):
+    """
+    In most cases, the household must have lived in the disaster area at the
+    time of the disaster. States may also choose to extend eligibility to those
+    who worked in the disaster area at the time of the disaster.
+    """
+
+    def execute(self, payload, config):
+        result = (
+            payload["resided_in_disaster_area_at_disaster_time"]
+            or (
+                payload["worked_in_disaster_area_at_disaster_time"]
+                and config.worked_in_disaster_area_is_dnsap_eligible)
+        )
+        if result:
+            finding = "Resided or worked in disaster area at disaster time"
+        else:
+            finding = "Did not reside or work in disaster area at disaster "\
+                      "time"
+        return Result(result, [finding])
+
+
 class IncomeAndResourceRule(Rule):
     """
     The household's take-home income received (or expected to be received)

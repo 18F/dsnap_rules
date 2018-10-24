@@ -4,6 +4,8 @@
         "has_lost_or_inaccessible_income": false,
         "has_inaccessible_liquid_resources": true,
         "incurred_deductible_disaster_expenses": false,
+        "resided_in_disaster_area_at_disaster_time": true,
+        "worked_in_disaster_area_at_disaster_time": false,
         "total_take_home_income": 800,
         "accessible_liquid_resources": 0,
         "deductible_disaster_expenses": 0,

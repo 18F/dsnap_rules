@@ -11,6 +11,8 @@ GOOD_PAYLOAD = {
     "is_authorized_representative": False,
     "has_lost_or_inaccessible_income": False,
     "has_inaccessible_liquid_resources": True,
+    "resided_in_disaster_area_at_disaster_time": True,
+    "worked_in_disaster_area_at_disaster_time": False,
     "incurred_deductible_disaster_expenses": False,
     "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
@@ -64,6 +66,7 @@ def test_basic_eligible_payload(get_dgi_calculator_mock, client):
         "findings": [
             "Either head of household or authorized representative",
             "Experienced disaster-related adverse effects",
+            "Resided or worked in disaster area at disaster time",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],
@@ -88,6 +91,7 @@ def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
         "findings": [
             "Neither head of household nor authorized representative",
             "Experienced disaster-related adverse effects",
+            "Resided or worked in disaster area at disaster time",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],

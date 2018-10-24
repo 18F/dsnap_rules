@@ -7,6 +7,7 @@ from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     IncomeAndResourceRule,
+    ResidencyRule,
 )
 from new_rules.rules import And
 
@@ -29,6 +30,7 @@ def run():
     result = And(
             AuthorizedRule(),
             AdverseEffectRule(),
+            ResidencyRule(),
             IncomeAndResourceRule()
     ).execute(data, config)
 

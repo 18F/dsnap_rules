@@ -6,6 +6,7 @@ from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     IncomeAndResourceRule,
+    ResidencyRule,
 )
 
 
@@ -68,6 +69,34 @@ def test_adverse_effect_rule():
         Result(True,
                findings=[
                    "Experienced disaster-related adverse effects"])
+    )
+
+
+def test_residency_rule():
+    payload = {
+        "resided_in_disaster_area_at_disaster_time": True,
+        "worked_in_disaster_area_at_disaster_time": False
+    }
+
+    assert_result(
+        ResidencyRule(),
+        payload,
+        Result(True,
+               findings=[
+                   "Resided or worked in disaster area at disaster time"])
+    )
+
+    payload = {
+        "resided_in_disaster_area_at_disaster_time": False,
+        "worked_in_disaster_area_at_disaster_time": False
+    }
+
+    assert_result(
+        ResidencyRule(),
+        payload,
+        Result(False,
+               findings=[
+                   "Did not reside or work in disaster area at disaster time"])
     )
 
 

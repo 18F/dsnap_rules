@@ -7,6 +7,12 @@ class Result:
         self.findings = findings
         self.metrics = metrics
 
+    def __eq__(self, other):
+        return (
+            self.successful == other.successful
+            and sorted(self.findings) == sorted(other.findings)
+            and self.metrics == other.metrics)
+
 
 class Rule:
     """Rule is a piece of logic that can be executed with a payload to provide a

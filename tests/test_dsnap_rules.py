@@ -186,6 +186,4 @@ def test_income_and_resource(get_dgi_calculator_mock):
 def assert_result(rule, payload, expected_result):
     config = get_config()
     actual_result = rule.execute(payload, config)
-    assert actual_result.successful == expected_result.successful
-    assert actual_result.findings == expected_result.findings
-    assert actual_result.metrics == expected_result.metrics
+    assert actual_result == expected_result

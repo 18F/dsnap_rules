@@ -1,6 +1,8 @@
 from unittest.mock import patch, Mock
 
-from new_rules.config import get_config
+import pytest
+
+from new_rules.config import get_config, Config
 from new_rules.rules import And, Result
 from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
@@ -10,94 +12,87 @@ from new_rules.dsnap.dsnap_rules import (
 )
 
 
-def test_authorized_rule():
-    payload = {
-        "is_head_of_household": False,
-        "is_authorized_representative": False,
-    }
-
-    assert_result(
-        AuthorizedRule(),
-        payload,
-        Result(False,
-               findings=[
-                   "Neither head of household nor authorized representative"])
-    )
-
-    payload["is_head_of_household"] = True
-    payload["is_authorized_representative"] = False
-    assert_result(
-        AuthorizedRule(),
-        payload,
-        Result(True,
-               findings=[
-                   "Either head of household or authorized representative"])
-    )
-
-    payload["is_head_of_household"] = False
-    payload["is_authorized_representative"] = True
-    assert_result(
-        AuthorizedRule(),
-        payload,
-        Result(True,
-               findings=[
-                   "Either head of household or authorized representative"])
-    )
-
-
-def test_adverse_effect_rule():
-    payload = {
-        "has_lost_or_inaccessible_income": False,
-        "has_inaccessible_liquid_resources": False,
-        "incurred_deductible_disaster_expenses": False,
-    }
-
-    assert_result(
-        AdverseEffectRule(),
-        payload,
-        Result(False,
-               findings=[
-                   "Did not experience any disaster-related adverse effect"])
-    )
-
-    payload["has_lost_or_inaccessible_income"] = True
-    payload["has_inaccessible_liquid_resources"] = False
-    payload["incurred_deductible_disaster_expenses"] = False
-    assert_result(
-        AdverseEffectRule(),
-        payload,
-        Result(True,
-               findings=[
-                   "Experienced disaster-related adverse effects"])
-    )
-
-
-def test_residency_rule():
-    payload = {
-        "resided_in_disaster_area_at_disaster_time": True,
-        "worked_in_disaster_area_at_disaster_time": False
-    }
-
-    assert_result(
-        ResidencyRule(),
-        payload,
-        Result(True,
-               findings=[
-                   "Resided or worked in disaster area at disaster time"])
-    )
+@pytest.mark.parametrize(
+    "is_head_of_household, is_authorized_representative, successful, findings",
+    [
+        (True, True, True, AuthorizedRule.success_finding),
+        (True, False, True, AuthorizedRule.success_finding),
+        (False, True, True, AuthorizedRule.success_finding),
+        (False, False, False, AuthorizedRule.failure_finding),
+    ])
+def test_authorized_rule(is_head_of_household, is_authorized_representative,
+                         successful, findings):
 
     payload = {
-        "resided_in_disaster_area_at_disaster_time": False,
-        "worked_in_disaster_area_at_disaster_time": False
+        "is_head_of_household": is_head_of_household,
+        "is_authorized_representative": is_authorized_representative,
     }
 
-    assert_result(
-        ResidencyRule(),
-        payload,
-        Result(False,
-               findings=[
-                   "Did not reside or work in disaster area at disaster time"])
-    )
+    actual_result = AuthorizedRule().execute(payload, config=None)
+    assert actual_result == Result(successful, findings=[findings])
+
+
+@pytest.mark.parametrize(
+    "has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,"
+    "incurred_deductible_disaster_expenses, successful, findings",
+    [
+        (True, True, True, True, AdverseEffectRule.success_finding),
+        (True, True, False, True, AdverseEffectRule.success_finding),
+        (True, False, True, True, AdverseEffectRule.success_finding),
+        (True, False, False, True, AdverseEffectRule.success_finding),
+        (False, True, True, True, AdverseEffectRule.success_finding),
+        (False, True, False, True, AdverseEffectRule.success_finding),
+        (False, False, True, True, AdverseEffectRule.success_finding),
+        (False, False, False, False, AdverseEffectRule.failure_finding),
+    ])
+def test_adverse_effect_rule(
+        has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,
+        incurred_deductible_disaster_expenses, successful, findings):
+
+    payload = {
+        "has_lost_or_inaccessible_income": has_lost_or_inaccessible_income,
+        "has_inaccessible_liquid_resources": has_inaccessible_liquid_resources,
+        "incurred_deductible_disaster_expenses":
+            incurred_deductible_disaster_expenses,
+    }
+
+    actual_result = AdverseEffectRule().execute(payload, config=None)
+    assert actual_result == Result(successful, findings=[findings])
+
+
+@pytest.mark.parametrize(
+    "resided_in_disaster_area_at_disaster_time,"
+    "worked_in_disaster_area_at_disaster_time,"
+    "worked_in_disaster_area_is_dnsap_eligible,"
+    "successful, findings",
+    [
+        (True, True, True, True, ResidencyRule.success_finding),
+        (True, True, False, True, ResidencyRule.success_finding),
+        (True, False, True, True, ResidencyRule.success_finding),
+        (True, False, False, True, ResidencyRule.success_finding),
+        (False, True, True, True, ResidencyRule.success_finding),
+        (False, True, False, False, ResidencyRule.failure_finding),
+        (False, False, True, False, ResidencyRule.failure_finding),
+        (False, False, False, False, ResidencyRule.failure_finding),
+    ])
+def test_residency_rule(
+        resided_in_disaster_area_at_disaster_time,
+        worked_in_disaster_area_at_disaster_time,
+        worked_in_disaster_area_is_dnsap_eligible,
+        successful, findings):
+
+    payload = {
+        "resided_in_disaster_area_at_disaster_time":
+            resided_in_disaster_area_at_disaster_time,
+        "worked_in_disaster_area_at_disaster_time":
+            worked_in_disaster_area_at_disaster_time
+    }
+    config = Config(
+        worked_in_disaster_area_is_dnsap_eligible=
+            worked_in_disaster_area_is_dnsap_eligible)
+
+    actual_result = ResidencyRule().execute(payload, config=config)
+    assert actual_result == Result(successful, findings=[findings])
 
 
 def test_the_and_rule():
@@ -184,6 +179,5 @@ def test_income_and_resource(get_dgi_calculator_mock):
 
 
 def assert_result(rule, payload, expected_result):
-    config = get_config()
-    actual_result = rule.execute(payload, config)
+    actual_result = rule.execute(payload, config=None)
     assert actual_result == expected_result

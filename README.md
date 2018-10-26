@@ -19,7 +19,7 @@ This project is in the worldwide [public domain](LICENSE.md). As stated in [CONT
 
 Install project dependencies using:
 ```
-pip install -r requirements.txt
+pipenv install
 ```
 
 ### Testing

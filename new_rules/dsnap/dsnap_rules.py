@@ -44,7 +44,7 @@ class ResidencyRule(SimplePredicateRule):
             payload["resided_in_disaster_area_at_disaster_time"]
             or (
                 payload["worked_in_disaster_area_at_disaster_time"]
-                and config.worked_in_disaster_area_is_dnsap_eligible)
+                and config.worked_in_disaster_area_is_dsnap_eligible)
         )
 
 

@@ -16,6 +16,8 @@ def test_good_data():
         "total_take_home_income": 10,
         "accessible_liquid_resources": 0,
         "deductible_disaster_expenses": 4.5,
+        "receives_FDPIR_benefits": True,
+        "receives_TEFAP_food_distribution": False,
     })
 
 

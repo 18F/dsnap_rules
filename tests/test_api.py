@@ -18,7 +18,9 @@ GOOD_PAYLOAD = {
     "accessible_liquid_resources": 0,
     "deductible_disaster_expenses": 0,
     "state_or_territory": "CA",
-    "size_of_household": 4
+    "size_of_household": 4,
+    "receives_FDPIR_benefits": False,
+    "receives_TEFAP_food_distribution": False,
 }
 
 
@@ -67,6 +69,7 @@ def test_basic_eligible_payload(get_dgi_calculator_mock, client):
             "Either head of household or authorized representative",
             "Experienced disaster-related adverse effects",
             "Resided or worked in disaster area at disaster time",
+            "Does not receive benefits from conflicting USDA programs",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],
@@ -92,6 +95,7 @@ def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
             "Neither head of household nor authorized representative",
             "Experienced disaster-related adverse effects",
             "Resided or worked in disaster area at disaster time",
+            "Does not receive benefits from conflicting USDA programs",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],

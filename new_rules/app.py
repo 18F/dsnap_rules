@@ -6,6 +6,7 @@ from new_rules.validate import validate
 from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
+    ConflictingUSDAProgramRule,
     IncomeAndResourceRule,
     ResidencyRule,
 )
@@ -31,6 +32,7 @@ def run():
             AuthorizedRule(),
             AdverseEffectRule(),
             ResidencyRule(),
+            ConflictingUSDAProgramRule(),
             IncomeAndResourceRule()
     ).execute(data, config)
 

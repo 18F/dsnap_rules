@@ -19,6 +19,8 @@ SCHEMA = {
         "state_or_territory": {"type": "string"},
         "total_take_home_income": {"type": "number", "minimum": 0},
         "worked_in_disaster_area_at_disaster_time": {"type": "boolean"},
+        "receives_FDPIR_benefits": {"type": "boolean"},
+        "receives_TEFAP_food_distribution": {"type": "boolean"},
     },
     "required": [
         "accessible_liquid_resources",
@@ -31,6 +33,8 @@ SCHEMA = {
         "size_of_household",
         "total_take_home_income",
         "worked_in_disaster_area_at_disaster_time",
+        "receives_FDPIR_benefits",
+        "receives_TEFAP_food_distribution",
     ]
 }
 

@@ -48,6 +48,22 @@ class ResidencyRule(SimplePredicateRule):
         )
 
 
+class ConflictingUSDAProgramRule(SimplePredicateRule):
+    """
+    A household is not eligible for D-SNAP if it is already being served by
+    the other programs of USDA Foods, such as Food Distribution on Indian
+    Reservations (FDPIR) and The Emergency Food Assistance Program (TEFAP).
+    """
+    success_finding = "Does not receive benefits from conflicting USDA "\
+                      "programs"
+    failure_finding = "Receives benefits from conflicting USDA programs"
+
+    def predicate(self, payload, config):
+        return not(
+            payload["receives_FDPIR_benefits"]
+            or payload["receives_TEFAP_food_distribution"])
+
+
 class IncomeAndResourceRule(Rule):
     """
     The household's take-home income received (or expected to be received)

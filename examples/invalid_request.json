@@ -7,5 +7,7 @@
         "accessible_liquid_resources": 0,
         "deductible_disaster_expenses": 0,
         "state_or_territory": "CA",
-        "size_of_household": 4
+        "size_of_household": 4,
+        "receives_FDPIR_benefits": false,
+        "receives_TEFAP_food_distribution": false
     }

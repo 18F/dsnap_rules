@@ -10,6 +10,8 @@ def test_good_data():
         "has_lost_or_inaccessible_income": False,
         "has_inaccessible_liquid_resources": False,
         "incurred_deductible_disaster_expenses": False,
+        "plans_to_purchase_food_during_benefit_period": True,
+        "purchased_food_during_benefit_period": False,
         "resided_in_disaster_area_at_disaster_time": True,
         "worked_in_disaster_area_at_disaster_time": False,
         "size_of_household": 2,

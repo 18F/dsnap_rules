@@ -11,6 +11,22 @@ class AuthorizedRule(SimplePredicateRule):
                 or payload["is_authorized_representative"])
 
 
+class FoodPurchaseRule(SimplePredicateRule):
+    """
+    The household must plan on purchasing food during the disaster benefit
+    period or have purchased food during that time if the benefit period has
+    passed.
+    """
+    success_finding = "Either purchased or plans to purchase food during "\
+                      "benefit period"
+    failure_finding = "Neither purchased nor plans to purchase food during "\
+                      "benefit period"
+
+    def predicate(self, payload, config):
+        return (payload["plans_to_purchase_food_during_benefit_period"]
+                or payload["purchased_food_during_benefit_period"])
+
+
 class AdverseEffectRule(SimplePredicateRule):
     """
     Disaster-related adverse effects fall into three categories: loss of

@@ -7,6 +7,7 @@ from new_rules.dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     ConflictingUSDAProgramRule,
+    FoodPurchaseRule,
     IncomeAndResourceRule,
     ResidencyRule,
 )
@@ -31,6 +32,7 @@ def run():
     result = And(
             AuthorizedRule(),
             AdverseEffectRule(),
+            FoodPurchaseRule(),
             ResidencyRule(),
             ConflictingUSDAProgramRule(),
             IncomeAndResourceRule()

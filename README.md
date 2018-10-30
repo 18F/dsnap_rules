@@ -29,15 +29,20 @@ Run tests using:
 pytest
 ```
 
+#### Testing the deployed application
+The application has also been deployed in cloud.gov and is available at https://new_rules.app.cloud.gov.
+
+The `examples` directory has examples for eligible, ineligible and invalid payloads.
+
+Submit examples from the directory `examples`. E.g.,
+```
+curl -X POST -d @examples/eligible_request.json https://new_rules.app.cloud.gov
+```
+
 ### Running locally
 Start the app using:
 ```
 FLASK_APP=new_rules.app python -m flask run
 ```
 
-The `examples` directory has examples for eligible, ineligible and invalid payloads.
-Submit examples from the directory `examples`. E.g.,
-```
-curl -X POST -d @examples/eligible_request.json http://localhost:5000/
-```
-This assumes that the application is running on the default port of 5000. To change the port and other settings, see http://flask.pocoo.org/docs/1.0/cli/#run-the-development-server.
+This will make the application available at `http://localhost:5000`, assuming that the application is running on the default port of 5000. To change the port and other settings, see http://flask.pocoo.org/docs/1.0/cli/#run-the-development-server.

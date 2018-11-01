@@ -39,6 +39,8 @@ Submit examples from the directory `examples`. E.g.,
 curl -X POST -d @examples/eligible_request.json https://new_rules.app.cloud.gov
 ```
 
+In addition, there is a quick-and-dirty [form](https://new_rules.app.cloud.gov) that can be used to test the application.
+
 ### Running locally
 Start the app using:
 ```

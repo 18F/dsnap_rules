@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from jsonschema.exceptions import ValidationError
 
 from new_rules.config import get_config
@@ -14,10 +14,14 @@ from new_rules.dsnap.dsnap_rules import (
 from new_rules.rules import And
 
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def run():
+    if request.method == 'GET':
+        return render_template('form.html')
+
     data = request.get_json(force=True)
 
     try:

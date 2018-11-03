@@ -14,5 +14,6 @@
         "state_or_territory": "CA",
         "size_of_household": 4,
         "receives_FDPIR_benefits": false,
-        "receives_TEFAP_food_distribution": false
+        "receives_TEFAP_food_distribution": false,
+        "receives_SNAP_benefits": false
     }

@@ -10,6 +10,7 @@ from new_rules.dsnap.dsnap_rules import (
     FoodPurchaseRule,
     IncomeAndResourceRule,
     ResidencyRule,
+    SNAPSupplementalBenefitsRule,
 )
 from new_rules.rules import And
 
@@ -39,6 +40,7 @@ def run():
             FoodPurchaseRule(),
             ResidencyRule(),
             ConflictingUSDAProgramRule(),
+            SNAPSupplementalBenefitsRule(),
             IncomeAndResourceRule()
     ).execute(data, config)
 

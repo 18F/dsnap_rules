@@ -23,6 +23,7 @@ GOOD_PAYLOAD = {
     "size_of_household": 4,
     "receives_FDPIR_benefits": False,
     "receives_TEFAP_food_distribution": False,
+    "receives_SNAP_benefits": False,
 }
 
 
@@ -73,6 +74,7 @@ def test_basic_eligible_payload(get_dgi_calculator_mock, client):
             "Either purchased or plans to purchase food during benefit period",
             "Resided or worked in disaster area at disaster time",
             "Does not receive benefits from conflicting USDA programs",
+            "Does not receive benefits from SNAP",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],
@@ -100,6 +102,7 @@ def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
             "Either purchased or plans to purchase food during benefit period",
             "Resided or worked in disaster area at disaster time",
             "Does not receive benefits from conflicting USDA programs",
+            "Does not receive benefits from SNAP",
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],

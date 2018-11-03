@@ -23,6 +23,7 @@ SCHEMA = {
         "worked_in_disaster_area_at_disaster_time": {"type": "boolean"},
         "receives_FDPIR_benefits": {"type": "boolean"},
         "receives_TEFAP_food_distribution": {"type": "boolean"},
+        "receives_SNAP_benefits": {"type": "boolean"},
     },
     "required": [
         "accessible_liquid_resources",
@@ -39,6 +40,7 @@ SCHEMA = {
         "worked_in_disaster_area_at_disaster_time",
         "receives_FDPIR_benefits",
         "receives_TEFAP_food_distribution",
+        "receives_SNAP_benefits",
     ]
 }
 

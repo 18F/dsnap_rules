@@ -64,6 +64,19 @@ class ResidencyRule(SimplePredicateRule):
         )
 
 
+class SNAPSupplementalBenefitsRule(SimplePredicateRule):
+    """
+    Supplemental benefits provide parity between new D-SNAP households
+    and ongoing clients, who are not eligible for D-SNAP benefits.
+    """
+    success_finding = "Does not receive benefits from SNAP"
+    failure_finding = "SNAP beneficiaries should apply for supplemental "\
+                      "benefits through SNAP"
+
+    def predicate(self, payload, config):
+        return not payload["receives_SNAP_benefits"]
+
+
 class ConflictingUSDAProgramRule(SimplePredicateRule):
     """
     A household is not eligible for D-SNAP if it is already being served by

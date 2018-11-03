@@ -20,6 +20,7 @@ def test_good_data():
         "deductible_disaster_expenses": 4.5,
         "receives_FDPIR_benefits": True,
         "receives_TEFAP_food_distribution": False,
+        "receives_SNAP_benefits": False,
     })
 
 

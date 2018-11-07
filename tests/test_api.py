@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from new_rules.app import app
+from dsnap_rules.app import app
 
 
 GOOD_PAYLOAD = {
@@ -55,7 +55,7 @@ def test_invalid_field_format(client):
         "'2' is not of type 'integer'")
 
 
-@patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
+@patch('dsnap_rules.dsnap.dgi_calculator.get_dgi_calculator')
 def test_basic_eligible_payload(get_dgi_calculator_mock, client):
     LIMIT = 500
     ALLOTMENT = 100
@@ -82,7 +82,7 @@ def test_basic_eligible_payload(get_dgi_calculator_mock, client):
     }
 
 
-@patch('new_rules.dsnap.dgi_calculator.get_dgi_calculator')
+@patch('dsnap_rules.dsnap.dgi_calculator.get_dgi_calculator')
 def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
     LIMIT = 500
     ALLOTMENT = 100

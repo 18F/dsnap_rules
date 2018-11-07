@@ -1,7 +1,7 @@
 import pytest
 
 from jsonschema.exceptions import ValidationError
-from new_rules.validate import validate
+from dsnap_rules.validate import validate
 
 
 def test_good_data():

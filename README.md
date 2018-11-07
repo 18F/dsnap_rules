@@ -1,5 +1,5 @@
-# Eligibility Rules
-[![CircleCI](https://circleci.com/gh/18F/new_rules.svg?style=svg)](https://circleci.com/gh/18F/new_rules)
+# D-SNAP Rules
+[![CircleCI](https://circleci.com/gh/18F/dsnap_rules.svg?style=svg)](https://circleci.com/gh/18F/dsnap_rules)
 
 ## Contributing
 
@@ -30,21 +30,21 @@ pytest
 ```
 
 #### Testing the deployed application
-The application has also been deployed in cloud.gov and is available at https://new_rules.app.cloud.gov.
+The application has also been deployed in cloud.gov and is available at https://dsnap_rules.app.cloud.gov.
 
 The `examples` directory has examples for eligible, ineligible and invalid payloads.
 
 Submit examples from the directory `examples`. E.g.,
 ```
-curl -X POST -d @examples/eligible_request.json https://new_rules.app.cloud.gov
+curl -X POST -d @examples/eligible_request.json https://dsnap_rules.app.cloud.gov
 ```
 
-In addition, there is a quick-and-dirty [form](https://new_rules.app.cloud.gov) that can be used to test the application.
+In addition, there is a quick-and-dirty [form](https://dsnap_rules.app.cloud.gov) that can be used to test the application.
 
 ### Running locally
 Start the app using:
 ```
-FLASK_APP=new_rules.app python -m flask run
+FLASK_APP=dsnap_rules.app python -m flask run
 ```
 
 This will make the application available at `http://localhost:5000`, assuming that the application is running on the default port of 5000. To change the port and other settings, see http://flask.pocoo.org/docs/1.0/cli/#run-the-development-server.

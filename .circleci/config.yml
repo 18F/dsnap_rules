@@ -60,4 +60,4 @@ jobs:
           command: |
             export PATH=$HOME/bin:$PATH
             cf login -a https://api.fr.cloud.gov -u $CF_USER -p $CF_PASS -o gsa-10x-prototyping -s dev
-            cf zero-downtime-push new_rules -f manifest_dev.yml
+            cf zero-downtime-push dsnap_rules -f manifest_dev.yml

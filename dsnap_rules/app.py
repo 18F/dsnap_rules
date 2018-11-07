@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 from jsonschema.exceptions import ValidationError
 
-from new_rules.config import get_config
-from new_rules.validate import validate
-from new_rules.dsnap.dsnap_rules import (
+from .config import get_config
+from .validate import validate
+from .dsnap.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     ConflictingUSDAProgramRule,
@@ -12,7 +12,7 @@ from new_rules.dsnap.dsnap_rules import (
     ResidencyRule,
     SNAPSupplementalBenefitsRule,
 )
-from new_rules.rules import And
+from dsnap_rules.rules import And
 
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True

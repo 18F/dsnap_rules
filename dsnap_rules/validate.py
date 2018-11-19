@@ -1,4 +1,5 @@
 from jsonschema import Draft4Validator
+from jsonschema.exceptions import ValidationError
 
 
 SCHEMA = {
@@ -46,4 +47,7 @@ SCHEMA = {
 
 
 def validate(data):
-    Draft4Validator(SCHEMA).validate(data)
+    error_messages = [
+        error.message for error in Draft4Validator(SCHEMA).iter_errors(data)]
+    if error_messages:
+        raise ValidationError(message=error_messages)

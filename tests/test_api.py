@@ -41,7 +41,7 @@ def test_missing_required_field(client):
 
     assert response.status_code == 400
     assert response.json["message"] == (
-        "'is_head_of_household' is a required property")
+        ["'is_head_of_household' is a required property"])
 
 
 def test_invalid_field_format(client):
@@ -52,7 +52,7 @@ def test_invalid_field_format(client):
 
     assert response.status_code == 400
     assert response.json["message"] == (
-        "'2' is not of type 'integer'")
+        ["'2' is not of type 'integer'"])
 
 
 @patch('dsnap_rules.dsnap.dgi_calculator.get_dgi_calculator')

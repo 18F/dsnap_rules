@@ -3,7 +3,7 @@ from jsonschema.exceptions import ValidationError
 
 from .config import get_config
 from .validate import validate
-from .dsnap.dsnap_rules import (
+from .dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     ConflictingUSDAProgramRule,

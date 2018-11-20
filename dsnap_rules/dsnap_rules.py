@@ -1,5 +1,5 @@
 from . import dgi_calculator
-from ..rules import Rule, Result, SimplePredicateRule
+from .rules import Rule, Result, SimplePredicateRule
 
 
 class AuthorizedRule(SimplePredicateRule):

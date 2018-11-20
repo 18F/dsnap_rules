@@ -4,7 +4,7 @@ import pytest
 
 from dsnap_rules.config import get_config, Config
 from dsnap_rules.rules import And, Result
-from dsnap_rules.dsnap.dsnap_rules import (
+from dsnap_rules.dsnap_rules import (
     AdverseEffectRule,
     AuthorizedRule,
     IncomeAndResourceRule,
@@ -134,7 +134,7 @@ def test_the_and_rule():
     )
 
 
-@patch('dsnap_rules.dsnap.dgi_calculator.get_dgi_calculator')
+@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
 def test_income_and_resource(get_dgi_calculator_mock):
     LIMIT = 500
     ALLOTMENT = 100

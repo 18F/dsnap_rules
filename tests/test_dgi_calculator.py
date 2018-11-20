@@ -1,6 +1,6 @@
 import pytest
 
-from dsnap_rules.dsnap.dgi_calculator import DisasterGrossIncomeCalculator
+from dsnap_rules.dgi_calculator import DisasterGrossIncomeCalculator
 
 
 def test_non_ascending_limits():

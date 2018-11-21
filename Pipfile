@@ -10,6 +10,8 @@ jsonschema = "*"
 pytest = "*"
 pytest-cov = "*"
 Flask = "*"
+flask-sqlalchemy = "*"
+"psycopg2" = "*"
 
 [dev-packages]
 ipython = "*"

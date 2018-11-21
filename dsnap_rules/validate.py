@@ -10,6 +10,7 @@ SCHEMA = {
     "properties": {
         "accessible_liquid_resources": {"type": "number", "minimum": 0},
         "deductible_disaster_expenses": {"type": "number", "minimum": 0},
+        "disaster_request_no": {"type": "string"},
         "has_inaccessible_liquid_resources": {"type": "boolean"},
         "has_lost_or_inaccessible_income": {"type": "boolean"},
         "incurred_deductible_disaster_expenses": {"type": "boolean"},
@@ -19,7 +20,6 @@ SCHEMA = {
         "plans_to_purchase_food_during_benefit_period": {"type": "boolean"},
         "purchased_food_during_benefit_period": {"type": "boolean"},
         "size_of_household": {"type": "integer", "minimum": 1},
-        "state_or_territory": {"type": "string"},
         "total_take_home_income": {"type": "number", "minimum": 0},
         "worked_in_disaster_area_at_disaster_time": {"type": "boolean"},
         "receives_FDPIR_benefits": {"type": "boolean"},
@@ -29,6 +29,7 @@ SCHEMA = {
     "required": [
         "accessible_liquid_resources",
         "deductible_disaster_expenses",
+        "disaster_request_no",
         "has_inaccessible_liquid_resources",
         "has_lost_or_inaccessible_income",
         "incurred_deductible_disaster_expenses",

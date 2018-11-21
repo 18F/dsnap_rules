@@ -15,12 +15,12 @@ class Result:
 
 
 class Rule:
-    """A Rule is a piece of logic that can be executed with a payload and a config
+    """A Rule is a piece of logic that can be executed with a payload and a disaster
     to provide a result. A payload is a `dict` that contains data attributes
-    used by the rule. A config is an instance of Config which provides
-    contextual environmental information for the rule.
+    used by the rule. A disaster is an instance of Disaster which provides
+    information on the disaster for which this D-SNAP is being run.
     """
-    def execute(self, payload, config):
+    def execute(self, payload, disaster):
         pass
 
 
@@ -29,8 +29,8 @@ class SimplePredicateRule(Rule):
     simple and the findings for success and failure are static strings.
     """
 
-    def execute(self, payload, config):
-        result = self.predicate(payload, config)
+    def execute(self, payload, disaster):
+        result = self.predicate(payload, disaster)
         finding = self.success_finding if result else self.failure_finding
         return Result(result, [finding])
 
@@ -39,12 +39,12 @@ class And(Rule):
     def __init__(self, *rules):
         self.rules = rules
 
-    def execute(self, payload, config):
+    def execute(self, payload, disaster):
         overall_success = True
         overall_findings = []
         overall_metrics = {}
         for rule in self.rules:
-            result = rule.execute(payload, config)
+            result = rule.execute(payload, disaster)
             overall_success = overall_success and result.successful
             overall_findings.extend(result.findings)
             overall_metrics.update(result.metrics)

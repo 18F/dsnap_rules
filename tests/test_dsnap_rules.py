@@ -2,7 +2,7 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-from dsnap_rules.config import get_config, Config
+from dsnap_rules.models import Disaster
 from dsnap_rules.rules import And, Result
 from dsnap_rules.dsnap_rules import (
     AdverseEffectRule,
@@ -28,7 +28,7 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
         "is_authorized_representative": is_authorized_representative,
     }
 
-    actual_result = AuthorizedRule().execute(payload, config=None)
+    actual_result = AuthorizedRule().execute(payload, disaster=None)
     assert actual_result == Result(successful, findings=[findings])
 
 
@@ -56,14 +56,14 @@ def test_adverse_effect_rule(
             incurred_deductible_disaster_expenses,
     }
 
-    actual_result = AdverseEffectRule().execute(payload, config=None)
+    actual_result = AdverseEffectRule().execute(payload, disaster=None)
     assert actual_result == Result(successful, findings=[findings])
 
 
 @pytest.mark.parametrize(
     "resided_in_disaster_area_at_disaster_time,"
     "worked_in_disaster_area_at_disaster_time,"
-    "worked_in_disaster_area_is_dsnap_eligible,"
+    "worked_is_dsnap_eligible,"
     "successful, findings",
     [
         (True, True, True, True, ResidencyRule.success_finding),
@@ -78,7 +78,7 @@ def test_adverse_effect_rule(
 def test_residency_rule(
         resided_in_disaster_area_at_disaster_time,
         worked_in_disaster_area_at_disaster_time,
-        worked_in_disaster_area_is_dsnap_eligible,
+        worked_is_dsnap_eligible,
         successful, findings):
 
     payload = {
@@ -87,11 +87,9 @@ def test_residency_rule(
         "worked_in_disaster_area_at_disaster_time":
             worked_in_disaster_area_at_disaster_time
     }
-    config = Config(
-        worked_in_disaster_area_is_dsnap_eligible=
-            worked_in_disaster_area_is_dsnap_eligible)
+    disaster = Disaster(worked_is_dsnap_eligible=worked_is_dsnap_eligible)
 
-    actual_result = ResidencyRule().execute(payload, config=config)
+    actual_result = ResidencyRule().execute(payload, disaster=disaster)
     assert actual_result == Result(successful, findings=[findings])
 
 
@@ -151,7 +149,6 @@ def test_income_and_resource(get_dgi_calculator_mock):
         "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
         "accessible_liquid_resources": ACCESSIBLE_LIQUID_RESOURCES,
         "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
-        "state_or_territory": "CA",
         "size_of_household": 4
     }
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
@@ -179,5 +176,5 @@ def test_income_and_resource(get_dgi_calculator_mock):
 
 
 def assert_result(rule, payload, expected_result):
-    actual_result = rule.execute(payload, config=None)
+    actual_result = rule.execute(payload, disaster=Disaster())
     assert actual_result == expected_result

@@ -3,10 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from dsnap_rules.app import app
+from dsnap_rules.app import app, Disaster
 
 
 GOOD_PAYLOAD = {
+    "disaster_request_no": "DR-1",
     "is_head_of_household": True,
     "is_authorized_representative": False,
     "has_lost_or_inaccessible_income": False,
@@ -19,7 +20,6 @@ GOOD_PAYLOAD = {
     "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
     "deductible_disaster_expenses": 0,
-    "state_or_territory": "CA",
     "size_of_household": 4,
     "receives_FDPIR_benefits": False,
     "receives_TEFAP_food_distribution": False,
@@ -56,9 +56,12 @@ def test_invalid_field_format(client):
 
 
 @patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
-def test_basic_eligible_payload(get_dgi_calculator_mock, client):
+@patch('dsnap_rules.app.get_disaster')
+def test_basic_eligible_payload(get_disaster_mock, get_dgi_calculator_mock,
+                                client):
     LIMIT = 500
     ALLOTMENT = 100
+    get_disaster_mock.return_value = Disaster(state_or_territory="XX")
     get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
@@ -78,14 +81,18 @@ def test_basic_eligible_payload(get_dgi_calculator_mock, client):
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],
-        "metrics": {"allotment": ALLOTMENT}
+        "metrics": {"allotment": ALLOTMENT},
+        "state_or_territory": "XX"
     }
 
 
 @patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
-def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
+@patch('dsnap_rules.app.get_disaster')
+def test_basic_ineligible_payload(get_disaster_mock, get_dgi_calculator_mock,
+                                  client):
     LIMIT = 500
     ALLOTMENT = 100
+    get_disaster_mock.return_value = Disaster(state_or_territory="XX")
     get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
@@ -106,6 +113,7 @@ def test_basic_ineligible_payload(get_dgi_calculator_mock, client):
             f"Gross income {payload['total_take_home_income']} within "
             f"limit of {LIMIT}"
         ],
-        "metrics": {"allotment": ALLOTMENT}
+        "metrics": {"allotment": ALLOTMENT},
+        "state_or_territory": "XX"
     }
     assert not response.json["eligible"]

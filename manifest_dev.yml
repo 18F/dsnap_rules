@@ -5,3 +5,5 @@ applications:
   memory: 512M
   routes:
     - route: dsnap_rules.app.cloud.gov
+  services:
+    - dsnap-eligibility-db

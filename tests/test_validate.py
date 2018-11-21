@@ -6,6 +6,7 @@ from dsnap_rules.validate import validate
 
 def test_good_data():
     validate({
+        "disaster_request_no": "DR-1",
         "is_head_of_household": True,
         "has_lost_or_inaccessible_income": False,
         "has_inaccessible_liquid_resources": False,

@@ -6,7 +6,7 @@ class AuthorizedRule(SimplePredicateRule):
     success_finding = "Either head of household or authorized representative"
     failure_finding = "Neither head of household nor authorized representative"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return (payload["is_head_of_household"]
                 or payload["is_authorized_representative"])
 
@@ -22,7 +22,7 @@ class FoodPurchaseRule(SimplePredicateRule):
     failure_finding = "Neither purchased nor plans to purchase food during "\
                       "benefit period"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return (payload["plans_to_purchase_food_during_benefit_period"]
                 or payload["purchased_food_during_benefit_period"])
 
@@ -37,7 +37,7 @@ class AdverseEffectRule(SimplePredicateRule):
     success_finding = "Experienced disaster-related adverse effects"
     failure_finding = "Did not experience any disaster-related adverse effect"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return (
             payload["has_lost_or_inaccessible_income"]
             or payload["has_inaccessible_liquid_resources"]
@@ -55,12 +55,12 @@ class ResidencyRule(SimplePredicateRule):
     failure_finding = "Did not reside or work in disaster area at disaster "\
                       "time"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return (
             payload["resided_in_disaster_area_at_disaster_time"]
             or (
                 payload["worked_in_disaster_area_at_disaster_time"]
-                and config.worked_in_disaster_area_is_dsnap_eligible)
+                and disaster.worked_is_dsnap_eligible)
         )
 
 
@@ -73,7 +73,7 @@ class SNAPSupplementalBenefitsRule(SimplePredicateRule):
     failure_finding = "SNAP beneficiaries should apply for supplemental "\
                       "benefits through SNAP"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return not payload["receives_SNAP_benefits"]
 
 
@@ -87,7 +87,7 @@ class ConflictingUSDAProgramRule(SimplePredicateRule):
                       "programs"
     failure_finding = "Receives benefits from conflicting USDA programs"
 
-    def predicate(self, payload, config):
+    def predicate(self, payload, disaster):
         return not(
             payload["receives_FDPIR_benefits"]
             or payload["receives_TEFAP_food_distribution"])
@@ -102,9 +102,9 @@ class IncomeAndResourceRule(Rule):
     shall not exceed the Disaster Gross Income Limit (DGIL).
     """
 
-    def execute(self, payload, config):
+    def execute(self, payload, disaster):
         gross_income = self.disaster_gross_income(payload)
-        income_limit, allotment = self.get_limit_and_allotment(payload)
+        income_limit, allotment = self.get_limit_and_allotment(payload, disaster)
         result = gross_income <= income_limit
         if result:
             finding = (
@@ -127,9 +127,9 @@ class IncomeAndResourceRule(Rule):
             - payload["deductible_disaster_expenses"]
         )
 
-    def get_limit_and_allotment(self, payload):
+    def get_limit_and_allotment(self, payload, disaster):
         calculator = dgi_calculator.get_dgi_calculator(
-                        payload["state_or_territory"])
+                        disaster.state_or_territory)
         return (
             calculator.get_limit(payload["size_of_household"]),
             calculator.get_allotment(payload["size_of_household"])

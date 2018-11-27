@@ -2,6 +2,6 @@
 applications:
 - name: dsnap_rules
   buildpack: python_buildpack
-  memory: 128M
+  memory: 512M
   routes:
     - route: dsnap_rules.app.cloud.gov

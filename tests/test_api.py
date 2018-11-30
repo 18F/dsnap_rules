@@ -55,6 +55,15 @@ def test_invalid_field_format(client):
         ["'2' is not of type 'integer'"])
 
 
+def test_invalid_disaster(client):
+    payload = copy.deepcopy(GOOD_PAYLOAD)
+    response = client.post('/', json=payload)
+
+    assert response.status_code == 404
+    assert response.json["message"] == "Disaster {} not found".format(
+            payload["disaster_request_no"])
+
+
 @patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
 @patch('dsnap_rules.app.get_disaster')
 def test_basic_eligible_payload(get_disaster_mock, get_dgi_calculator_mock,

@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm.exc import NoResultFound
 from jsonschema.exceptions import ValidationError
 
 from .validate import validate
@@ -40,7 +41,13 @@ def run():
         response.status_code = 400
         return response
 
-    disaster = get_disaster(data["disaster_request_no"])
+    try:
+        disaster = get_disaster(data["disaster_request_no"])
+    except NoResultFound:
+        response = jsonify(message="Disaster {} not found".format(
+            data["disaster_request_no"]))
+        response.status_code = 404
+        return response
 
     result = And(
             AuthorizedRule(),

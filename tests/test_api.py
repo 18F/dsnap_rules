@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from dsnap_rules.app import app, Disaster
+from dsnap_rules.app import app, Disaster, db
+from flask_migrate import upgrade, downgrade, migrate
 
 
 GOOD_PAYLOAD = {
@@ -33,6 +34,17 @@ def client():
     yield client
 
 
+@pytest.fixture(scope="module")
+def database(request):
+    def fin():
+        with app.app_context():
+            downgrade(revision='base')
+    request.addfinalizer(fin)
+
+    with app.app_context():
+        upgrade()
+
+
 def test_missing_required_field(client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     del payload["is_head_of_household"]
@@ -55,13 +67,36 @@ def test_invalid_field_format(client):
         ["'2' is not of type 'integer'"])
 
 
-def test_invalid_disaster(client):
+def test_invalid_disaster(client, database):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     response = client.post('/', json=payload)
 
     assert response.status_code == 404
     assert response.json["message"] == "Disaster {} not found".format(
             payload["disaster_request_no"])
+
+
+@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
+def test_valid_disaster(get_dgi_calculator_mock, client, database):
+    LIMIT = 500
+    ALLOTMENT = 100
+    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+    payload = copy.deepcopy(GOOD_PAYLOAD)
+    disaster = Disaster(
+            disaster_request_no=payload["disaster_request_no"],
+            title="Disaster in FL",
+            benefit_begin_date="2018-10-01",
+            benefit_end_date="2018-10-31",
+            state_or_territory="FL",
+            worked_is_dsnap_eligible=False,
+            )
+    db.session.add(disaster)
+    db.session.commit()
+    response = client.post('/', json=payload)
+
+    assert response.status_code == 200
+    assert response.json["state_or_territory"] == "FL"
 
 
 @patch('dsnap_rules.dgi_calculator.get_dgi_calculator')

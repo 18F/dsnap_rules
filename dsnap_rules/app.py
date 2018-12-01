@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, render_template, request, jsonify
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
 from jsonschema.exceptions import ValidationError
@@ -22,7 +23,10 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     "DATABASE_URL", 'postgresql:///dsnap')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 from .models import Disaster
 

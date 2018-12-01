@@ -12,6 +12,7 @@ pytest-cov = "*"
 Flask = "*"
 flask-sqlalchemy = "*"
 "psycopg2" = "*"
+flask-migrate = "*"
 
 [dev-packages]
 ipython = "*"

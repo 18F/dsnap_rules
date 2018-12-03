@@ -63,22 +63,22 @@ def test_adverse_effect_rule(
 @pytest.mark.parametrize(
     "resided_in_disaster_area_at_disaster_time,"
     "worked_in_disaster_area_at_disaster_time,"
-    "worked_is_dsnap_eligible,"
+    "is_residency_required,"
     "successful, findings",
     [
-        (True, True, True, True, ResidencyRule.success_finding),
         (True, True, False, True, ResidencyRule.success_finding),
-        (True, False, True, True, ResidencyRule.success_finding),
+        (True, True, True, True, ResidencyRule.success_finding),
         (True, False, False, True, ResidencyRule.success_finding),
-        (False, True, True, True, ResidencyRule.success_finding),
-        (False, True, False, False, ResidencyRule.failure_finding),
-        (False, False, True, False, ResidencyRule.failure_finding),
+        (True, False, True, True, ResidencyRule.success_finding),
+        (False, True, False, True, ResidencyRule.success_finding),
+        (False, True, True, False, ResidencyRule.failure_finding),
         (False, False, False, False, ResidencyRule.failure_finding),
+        (False, False, True, False, ResidencyRule.failure_finding),
     ])
 def test_residency_rule(
         resided_in_disaster_area_at_disaster_time,
         worked_in_disaster_area_at_disaster_time,
-        worked_is_dsnap_eligible,
+        is_residency_required,
         successful, findings):
 
     payload = {
@@ -87,7 +87,7 @@ def test_residency_rule(
         "worked_in_disaster_area_at_disaster_time":
             worked_in_disaster_area_at_disaster_time
     }
-    disaster = Disaster(worked_is_dsnap_eligible=worked_is_dsnap_eligible)
+    disaster = Disaster(is_residency_required=is_residency_required)
 
     actual_result = ResidencyRule().execute(payload, disaster=disaster)
     assert actual_result == Result(successful, findings=[findings])

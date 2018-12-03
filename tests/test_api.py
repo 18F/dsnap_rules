@@ -89,7 +89,7 @@ def test_valid_disaster(get_dgi_calculator_mock, client, database):
             benefit_begin_date="2018-10-01",
             benefit_end_date="2018-10-31",
             state_or_territory="FL",
-            worked_is_dsnap_eligible=False,
+            is_residency_required=True,
             )
     db.session.add(disaster)
     db.session.commit()

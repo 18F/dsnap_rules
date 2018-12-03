@@ -90,6 +90,7 @@ def test_valid_disaster(get_calculator_mock, client, database):
             benefit_end_date="2018-10-31",
             state_or_territory="FL",
             is_residency_required=True,
+            uses_DSED=False,
             )
     db.session.add(disaster)
     db.session.commit()

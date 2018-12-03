@@ -1,9 +1,12 @@
-def get_calculator(state_or_territory, region_category=None):
+def get_calculator(disaster, region_category=None):
     """
     Get the appropriate Income and Allotment Calculator for the state
     or territory.
     """
-    if state_or_territory == "AK":
+    if disaster.uses_DSED:
+        return DSED_Calculator
+
+    if disaster.state_or_territory == "AK":
         if region_category == "URBAN":
             return AK_URBAN_Calculator
         elif region_category == "RURAL1":
@@ -12,11 +15,11 @@ def get_calculator(state_or_territory, region_category=None):
             return AK_RURAL2_Calculator
         else:
             raise Exception("Calculator not found")
-    elif state_or_territory == "HI":
+    elif disaster.state_or_territory == "HI":
         return HI_Calculator
-    elif state_or_territory == "GU":
+    elif disaster.state_or_territory == "GU":
         return GU_Calculator
-    elif state_or_territory == "VI":
+    elif disaster.state_or_territory == "VI":
         return VI_Calculator
     else:
         return DEFAULT_Calculator
@@ -136,3 +139,15 @@ VI_Calculator = IncomeAndAllotmentCalculator([
         (4201, 1485),
     ],
     360, 186)
+
+DSED_Calculator = IncomeAndAllotmentCalculator([
+        (2518, 192),
+        (3281, 353),
+        (3773, 505),
+        (4448, 642),
+        (4904, 762),
+        (5481, 914),
+        (5900, 1011),
+        (6319, 1155),
+    ],
+    419, 144)

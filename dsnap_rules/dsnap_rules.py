@@ -100,10 +100,15 @@ class IncomeAndResourceRule(Rule):
     disaster related expenses (unreimbursed disaster related expenses paid or
     anticipated to be paid out of pocket during the disaster benefit period)
     shall not exceed the Disaster Gross Income Limit (DGIL).
+
+    With FNS approval, a State may choose to utilize a Disaster Standard
+    Expense Deduction (DSED) in lieu of actual disaster expenses incurred by a
+    household, provided that food loss alone is not the only qualifying
+    expense.
     """
 
     def execute(self, payload, disaster):
-        gross_income = self.disaster_gross_income(payload)
+        gross_income = self.disaster_gross_income(payload, disaster)
         income_limit, allotment = self.get_limit_and_allotment(
             payload, disaster)
         result = gross_income <= income_limit
@@ -121,16 +126,17 @@ class IncomeAndResourceRule(Rule):
             metrics = {}
         return Result(result, [finding], metrics)
 
-    def disaster_gross_income(self, payload):
+    def disaster_gross_income(self, payload, disaster):
         return (
             payload["total_take_home_income"]
             + payload["accessible_liquid_resources"]
-            - payload["deductible_disaster_expenses"]
+            - (0 if disaster.uses_DSED
+                else payload["deductible_disaster_expenses"])
         )
 
     def get_limit_and_allotment(self, payload, disaster):
         calculator = income_allotment_calculator.get_calculator(
-                        disaster.state_or_territory)
+                        disaster)
         return (
             calculator.get_limit(payload["size_of_household"]),
             calculator.get_allotment(payload["size_of_household"])

@@ -162,7 +162,6 @@ def test_income_and_resource(get_calculator_mock):
                metrics={"allotment": ALLOTMENT})
     )
 
-    get_calculator_mock.assert_called()
     payload["total_take_home_income"] = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
@@ -175,6 +174,38 @@ def test_income_and_resource(get_calculator_mock):
     )
 
 
-def assert_result(rule, payload, expected_result):
-    actual_result = rule.execute(payload, disaster=Disaster())
+@patch('dsnap_rules.income_allotment_calculator.get_calculator')
+def test_DSED_calculation(get_calculator_mock):
+    LIMIT = 500
+    ALLOTMENT = 100
+    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+
+    TOTAL_TAKE_HOME_INCOME = 100
+    ACCESSIBLE_LIQUID_RESOURCES = 450
+    DEDUCTIBLE_DISASTER_EXPENSES = 50
+
+    payload = {
+        "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
+        "accessible_liquid_resources": ACCESSIBLE_LIQUID_RESOURCES,
+        "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
+        "size_of_household": 4
+    }
+    disaster = Disaster(uses_DSED=True)
+    # Don't subtract disaster expenses when DSED in use
+    gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES)
+
+    assert_result(
+        IncomeAndResourceRule(),
+        payload,
+        Result(False,
+               findings=[
+                   f"Gross income {gross_income} exceeds limit of {LIMIT}"]),
+        disaster=disaster
+    )
+
+def assert_result(rule, payload, expected_result, disaster=None):
+    if disaster is None:
+        disaster = Disaster()
+    actual_result = rule.execute(payload, disaster=disaster)
     assert actual_result == expected_result

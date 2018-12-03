@@ -132,12 +132,12 @@ def test_the_and_rule():
     )
 
 
-@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
-def test_income_and_resource(get_dgi_calculator_mock):
+@patch('dsnap_rules.income_allotment_calculator.get_calculator')
+def test_income_and_resource(get_calculator_mock):
     LIMIT = 500
     ALLOTMENT = 100
-    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
-    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
 
     TOTAL_TAKE_HOME_INCOME = 200
     ACCESSIBLE_LIQUID_RESOURCES = 300
@@ -162,7 +162,7 @@ def test_income_and_resource(get_dgi_calculator_mock):
                metrics={"allotment": ALLOTMENT})
     )
 
-    get_dgi_calculator_mock.assert_called()
+    get_calculator_mock.assert_called()
     payload["total_take_home_income"] = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)

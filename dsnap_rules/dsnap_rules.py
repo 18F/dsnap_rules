@@ -1,4 +1,4 @@
-from . import dgi_calculator
+from . import income_allotment_calculator
 from .rules import Rule, Result, SimplePredicateRule
 
 
@@ -104,7 +104,8 @@ class IncomeAndResourceRule(Rule):
 
     def execute(self, payload, disaster):
         gross_income = self.disaster_gross_income(payload)
-        income_limit, allotment = self.get_limit_and_allotment(payload, disaster)
+        income_limit, allotment = self.get_limit_and_allotment(
+            payload, disaster)
         result = gross_income <= income_limit
         if result:
             finding = (
@@ -128,7 +129,7 @@ class IncomeAndResourceRule(Rule):
         )
 
     def get_limit_and_allotment(self, payload, disaster):
-        calculator = dgi_calculator.get_dgi_calculator(
+        calculator = income_allotment_calculator.get_calculator(
                         disaster.state_or_territory)
         return (
             calculator.get_limit(payload["size_of_household"]),

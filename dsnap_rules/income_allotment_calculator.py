@@ -1,28 +1,28 @@
-def get_dgi_calculator(state_or_territory, region_category=None):
+def get_calculator(state_or_territory, region_category=None):
     """
-    Get the appropriate Disaster Gross Income Calculator for the state
+    Get the appropriate Income and Allotment Calculator for the state
     or territory.
     """
     if state_or_territory == "AK":
         if region_category == "URBAN":
-            return AK_URBAN_DGICalculator
+            return AK_URBAN_Calculator
         elif region_category == "RURAL1":
-            return AK_RURAL1_DGICalculator
+            return AK_RURAL1_Calculator
         elif region_category == "RURAL2":
-            return AK_RURAL2_DGICalculator
+            return AK_RURAL2_Calculator
         else:
             raise Exception("Calculator not found")
     elif state_or_territory == "HI":
-        return HI_DGICalculator
+        return HI_Calculator
     elif state_or_territory == "GU":
-        return GU_DGICalculator
+        return GU_Calculator
     elif state_or_territory == "VI":
-        return VI_DGICalculator
+        return VI_Calculator
     else:
-        return DEFAULT_DGICalculator
+        return DEFAULT_Calculator
 
 
-class DisasterGrossIncomeCalculator:
+class IncomeAndAllotmentCalculator:
     def __init__(self, limits_and_allotments, incremental_limit,
                  incremental_allotment):
         self.limits, self.allotments = zip(*limits_and_allotments)
@@ -52,7 +52,7 @@ class DisasterGrossIncomeCalculator:
                 * self.incremental_allotment)
 
 
-DEFAULT_DGICalculator = DisasterGrossIncomeCalculator([
+DEFAULT_Calculator = IncomeAndAllotmentCalculator([
         (1728, 192),
         (2088, 353),
         (2448, 505),
@@ -64,7 +64,7 @@ DEFAULT_DGICalculator = DisasterGrossIncomeCalculator([
     ],
     360, 144)
 
-AK_URBAN_DGICalculator = DisasterGrossIncomeCalculator([
+AK_URBAN_Calculator = IncomeAndAllotmentCalculator([
         (2427, 232),
         (2877, 425),
         (3327, 609),
@@ -76,7 +76,7 @@ AK_URBAN_DGICalculator = DisasterGrossIncomeCalculator([
     ],
     450, 174)
 
-AK_RURAL1_DGICalculator = DisasterGrossIncomeCalculator([
+AK_RURAL1_Calculator = IncomeAndAllotmentCalculator([
         (2427, 295),
         (2877, 542),
         (3327, 776),
@@ -88,7 +88,7 @@ AK_RURAL1_DGICalculator = DisasterGrossIncomeCalculator([
     ],
     450, 222)
 
-AK_RURAL2_DGICalculator = DisasterGrossIncomeCalculator([
+AK_RURAL2_Calculator = IncomeAndAllotmentCalculator([
         (2427, 360),
         (2877, 660),
         (3327, 945),
@@ -101,7 +101,7 @@ AK_RURAL2_DGICalculator = DisasterGrossIncomeCalculator([
     450, 270)
 
 
-HI_DGICalculator = DisasterGrossIncomeCalculator([
+HI_Calculator = IncomeAndAllotmentCalculator([
         (2139, 358),
         (2553, 656),
         (2967, 940),
@@ -113,7 +113,7 @@ HI_DGICalculator = DisasterGrossIncomeCalculator([
     ],
     415, 269)
 
-GU_DGICalculator = DisasterGrossIncomeCalculator([
+GU_Calculator = IncomeAndAllotmentCalculator([
         (1990, 283),
         (2350, 520),
         (2710, 745),
@@ -125,7 +125,7 @@ GU_DGICalculator = DisasterGrossIncomeCalculator([
     ],
     360, 213)
 
-VI_DGICalculator = DisasterGrossIncomeCalculator([
+VI_Calculator = IncomeAndAllotmentCalculator([
         (1592, 247),
         (1952, 454),
         (2312, 650),

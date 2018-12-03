@@ -76,12 +76,12 @@ def test_invalid_disaster(client, database):
             payload["disaster_request_no"])
 
 
-@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
-def test_valid_disaster(get_dgi_calculator_mock, client, database):
+@patch('dsnap_rules.income_allotment_calculator.get_calculator')
+def test_valid_disaster(get_calculator_mock, client, database):
     LIMIT = 500
     ALLOTMENT = 100
-    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
-    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     disaster = Disaster(
             disaster_request_no=payload["disaster_request_no"],
@@ -99,15 +99,15 @@ def test_valid_disaster(get_dgi_calculator_mock, client, database):
     assert response.json["state_or_territory"] == "FL"
 
 
-@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
+@patch('dsnap_rules.income_allotment_calculator.get_calculator')
 @patch('dsnap_rules.app.get_disaster')
-def test_basic_eligible_payload(get_disaster_mock, get_dgi_calculator_mock,
+def test_basic_eligible_payload(get_disaster_mock, get_calculator_mock,
                                 client):
     LIMIT = 500
     ALLOTMENT = 100
     get_disaster_mock.return_value = Disaster(state_or_territory="XX")
-    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
-    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
 
     response = client.post('/', json=payload)
@@ -130,15 +130,15 @@ def test_basic_eligible_payload(get_disaster_mock, get_dgi_calculator_mock,
     }
 
 
-@patch('dsnap_rules.dgi_calculator.get_dgi_calculator')
+@patch('dsnap_rules.income_allotment_calculator.get_calculator')
 @patch('dsnap_rules.app.get_disaster')
-def test_basic_ineligible_payload(get_disaster_mock, get_dgi_calculator_mock,
+def test_basic_ineligible_payload(get_disaster_mock, get_calculator_mock,
                                   client):
     LIMIT = 500
     ALLOTMENT = 100
     get_disaster_mock.return_value = Disaster(state_or_territory="XX")
-    get_dgi_calculator_mock.return_value.get_limit.return_value = LIMIT
-    get_dgi_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
+    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
 

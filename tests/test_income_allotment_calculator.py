@@ -1,11 +1,13 @@
 import pytest
 
-from dsnap_rules.dgi_calculator import DisasterGrossIncomeCalculator
+from dsnap_rules.income_allotment_calculator import (
+    IncomeAndAllotmentCalculator
+)
 
 
 def test_non_ascending_limits():
     with pytest.raises(ValueError):
-        DisasterGrossIncomeCalculator([
+        IncomeAndAllotmentCalculator([
                 (40, 4),
                 (20, 6),
                 (30, 8)
@@ -15,7 +17,7 @@ def test_non_ascending_limits():
 
 def test_non_ascending_allotments():
     with pytest.raises(ValueError):
-        DisasterGrossIncomeCalculator([
+        IncomeAndAllotmentCalculator([
                 (10, 4),
                 (20, 3),
                 (30, 8)
@@ -24,7 +26,7 @@ def test_non_ascending_allotments():
 
 
 def test_limit_calculations():
-    calculator = DisasterGrossIncomeCalculator([
+    calculator = IncomeAndAllotmentCalculator([
             (10, 4),
             (20, 6),
             (30, 8),
@@ -37,7 +39,7 @@ def test_limit_calculations():
 
 
 def test_allotment_calculations():
-    calculator = DisasterGrossIncomeCalculator([
+    calculator = IncomeAndAllotmentCalculator([
             (10, 4),
             (20, 6),
             (30, 8),

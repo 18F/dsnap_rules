@@ -78,4 +78,4 @@ def get_disaster(disaster_request_no):
 
 
 def get_all_disasters():
-    return Disaster.query.all()
+    return Disaster.query.order_by(Disaster.disaster_request_no).all()

@@ -66,12 +66,12 @@ def test_adverse_effect_rule(
     "is_residency_required,"
     "successful, findings",
     [
-        (True, True, False, True, ResidencyRule.success_finding),
-        (True, True, True, True, ResidencyRule.success_finding),
-        (True, False, False, True, ResidencyRule.success_finding),
-        (True, False, True, True, ResidencyRule.success_finding),
-        (False, True, False, True, ResidencyRule.success_finding),
-        (False, True, True, False, ResidencyRule.failure_finding),
+        (True, True, False, True, ResidencyRule.resided_finding),
+        (True, True, True, True, ResidencyRule.resided_finding),
+        (True, False, False, True, ResidencyRule.resided_finding),
+        (True, False, True, True, ResidencyRule.resided_finding),
+        (False, True, False, True, ResidencyRule.worked_eligible_finding),
+        (False, True, True, False, ResidencyRule.worked_ineligible_finding),
         (False, False, False, False, ResidencyRule.failure_finding),
         (False, False, True, False, ResidencyRule.failure_finding),
     ])

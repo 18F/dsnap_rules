@@ -44,24 +44,39 @@ class AdverseEffectRule(SimplePredicateRule):
             or payload["incurred_deductible_disaster_expenses"])
 
 
-class ResidencyRule(SimplePredicateRule):
+class ResidencyRule(Rule):
     """
     In most cases, the household must have lived in the disaster area at the
     time of the disaster. States may also choose to extend eligibility to those
     who worked in the disaster area at the time of the disaster.
     """
 
-    success_finding = "Resided or worked in disaster area at disaster time"
+    resided_finding = "Resided in disaster area at disaster time"
+    worked_ineligible_finding = "Worked in disaster area at disaster "\
+        "time but only residents are eligible"
+    worked_eligible_finding = "Worked in disaster area at disaster time "\
+        "and those who worked are eligible to receive benefits for this "\
+        "disaster"
     failure_finding = "Did not reside or work in disaster area at disaster "\
                       "time"
 
-    def predicate(self, payload, disaster):
-        return (
-            payload["resided_in_disaster_area_at_disaster_time"]
-            or (
-                payload["worked_in_disaster_area_at_disaster_time"]
-                and not disaster.is_residency_required)
-        )
+    def execute(self, payload, disaster):
+        result = False
+        if payload["resided_in_disaster_area_at_disaster_time"]:
+            finding = self.resided_finding
+            result = True
+        elif payload["worked_in_disaster_area_at_disaster_time"]:
+            if disaster.is_residency_required:
+                finding = self.worked_ineligible_finding
+                result = False
+            else:
+                finding = self.worked_eligible_finding
+                result = True
+        else:
+            finding = self.failure_finding
+            result = False
+
+        return Result(result, [finding])
 
 
 class SNAPSupplementalBenefitsRule(SimplePredicateRule):

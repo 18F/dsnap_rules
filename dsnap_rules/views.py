@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from jsonschema.exceptions import ValidationError
 
@@ -20,6 +21,11 @@ from .models import Disaster
 @csrf_exempt
 @json_request
 def index(request):
+    if request.method == 'GET':
+        disasters = Disaster.objects.order_by('disaster_request_no')
+        context = {"disaster_list": disasters}
+        return render(request, 'dsnap_rules/demo_form.html', context)
+
     data = request.json
 
     try:

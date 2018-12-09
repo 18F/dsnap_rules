@@ -63,4 +63,4 @@ def index(request):
 
 
 def jsonify(**kwargs):
-    return JsonResponse(kwargs)
+    return JsonResponse(kwargs, json_dumps_params={"indent": 2})

@@ -46,6 +46,7 @@ Create a local PostgreSQL database. Set the environment variable DATABASE_URL to
 ```
 export DATABASE_URL=postgresql:///dsnap
 ```
+If this variable is not set, it defaults to `postgresql:///dsnap` in development/local environments.
 
 Migrate the database, if necessary, using:
 ```

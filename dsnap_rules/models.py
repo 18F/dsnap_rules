@@ -9,7 +9,7 @@ class Disaster(models.Model):
     benefit_begin_date = models.DateField(null=False)
     benefit_end_date = models.DateField(null=False)
     state_or_territory = models.CharField(max_length=2)
-    is_residency_required = models.BooleanField()
+    residency_required = models.BooleanField()
     uses_DSED = models.BooleanField()
 
     def __str__(self):

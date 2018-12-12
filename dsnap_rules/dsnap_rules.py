@@ -66,7 +66,7 @@ class ResidencyRule(Rule):
             finding = self.resided_finding
             result = True
         elif payload["worked_in_disaster_area_at_disaster_time"]:
-            if disaster.is_residency_required:
+            if disaster.residency_required:
                 finding = self.worked_ineligible_finding
                 result = False
             else:

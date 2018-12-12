@@ -76,7 +76,7 @@ def test_valid_disaster(get_calculator_mock, client):
             benefit_begin_date="2018-10-01",
             benefit_end_date="2018-10-31",
             state_or_territory="FL",
-            is_residency_required=True,
+            residency_required=True,
             uses_DSED=False,
             )
     response = client.post('/', data=payload, content_type="application/json")
@@ -114,7 +114,7 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
             benefit_begin_date="2018-10-01",
             benefit_end_date="2018-10-31",
             state_or_territory="FL",
-            is_residency_required=True,
+            residency_required=True,
             uses_DSED=False,
             )
     response = client.post('/', data=payload, content_type="application/json")

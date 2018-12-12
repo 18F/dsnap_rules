@@ -7,3 +7,5 @@ applications:
     - route: dsnap-rules.app.cloud.gov
   services:
     - dsnap-eligibility-db
+  env:
+    DJANGO_SETTINGS_MODULE: rules_service.settings.cloud

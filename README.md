@@ -21,6 +21,7 @@ Install project dependencies using:
 ```
 pipenv install
 ```
+Once the dependencies have been installed, you can run the rest of the commands by dropping into a virtual environment shell by running `pipenv shell`, or by preceding each command with a `pipenv run`.
 
 ### Testing
 

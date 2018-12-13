@@ -3,9 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from dsnap_rules.app import app, Disaster, db
-from flask_migrate import upgrade, downgrade, migrate
-
+from dsnap_rules.models import Disaster
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
@@ -28,93 +26,64 @@ GOOD_PAYLOAD = {
 }
 
 
-@pytest.fixture
-def client():
-    client = app.test_client()
-    yield client
-
-
-@pytest.fixture(scope="module")
-def database(request):
-    def fin():
-        with app.app_context():
-            downgrade(revision='base')
-    request.addfinalizer(fin)
-
-    with app.app_context():
-        upgrade()
-
-
 def test_missing_required_field(client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     del payload["is_head_of_household"]
 
-    response = client.post('/', json=payload)
+    response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 400
-    assert response.json["message"] == (
-        ["'is_head_of_household' is a required property"])
+    assert response.json() == {
+        "message": ["'is_head_of_household' is a required property"]
+    }
 
 
 def test_invalid_field_format(client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["size_of_household"] = "2"
 
-    response = client.post('/', json=payload)
+    response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 400
-    assert response.json["message"] == (
-        ["'2' is not of type 'integer'"])
+    assert response.json() == {
+        "message": ["'2' is not of type 'integer'"]
+    }
 
 
-def test_invalid_disaster(client, database):
+@pytest.mark.django_db
+def test_invalid_disaster(client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
-    response = client.post('/', json=payload)
+    response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 404
-    assert response.json["message"] == "Disaster {} not found".format(
+    assert response.json() == {
+        "message": "Disaster {} not found".format(
             payload["disaster_request_no"])
+    }
 
 
+@pytest.mark.django_db
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
-def test_valid_disaster(get_calculator_mock, client, database):
+def test_valid_disaster(get_calculator_mock, client):
     LIMIT = 500
     ALLOTMENT = 100
     get_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
-    disaster = Disaster(
+    Disaster.objects.create(
             disaster_request_no=payload["disaster_request_no"],
             title="Disaster in FL",
             benefit_begin_date="2018-10-01",
             benefit_end_date="2018-10-31",
             state_or_territory="FL",
-            is_residency_required=True,
+            residency_required=True,
             uses_DSED=False,
             )
-    db.session.add(disaster)
-    db.session.commit()
-    response = client.post('/', json=payload)
+    response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json["state_or_territory"] == "FL"
-
-
-@patch('dsnap_rules.income_allotment_calculator.get_calculator')
-@patch('dsnap_rules.app.get_disaster')
-def test_basic_eligible_payload(get_disaster_mock, get_calculator_mock,
-                                client):
-    LIMIT = 500
-    ALLOTMENT = 100
-    get_disaster_mock.return_value = Disaster(state_or_territory="XX")
-    get_calculator_mock.return_value.get_limit.return_value = LIMIT
-    get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
-    payload = copy.deepcopy(GOOD_PAYLOAD)
-
-    response = client.post('/', json=payload)
-
-    assert response.status_code == 200
-    assert response.json == {
+    assert response.json()["state_or_territory"] == "FL"
+    assert response.json() == {
         "eligible": True,
         "findings": [
             "Either head of household or authorized representative",
@@ -127,26 +96,32 @@ def test_basic_eligible_payload(get_disaster_mock, get_calculator_mock,
             f"limit of {LIMIT}"
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state_or_territory": "XX"
+        "state_or_territory": "FL"
     }
 
-
+@pytest.mark.django_db
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
-@patch('dsnap_rules.app.get_disaster')
-def test_basic_ineligible_payload(get_disaster_mock, get_calculator_mock,
-                                  client):
+def test_basic_ineligible_payload(get_calculator_mock, client):
     LIMIT = 500
     ALLOTMENT = 100
-    get_disaster_mock.return_value = Disaster(state_or_territory="XX")
     get_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
-
-    response = client.post('/', json=payload)
+    Disaster.objects.create(
+            disaster_request_no=payload["disaster_request_no"],
+            title="Disaster in FL",
+            benefit_begin_date="2018-10-01",
+            benefit_end_date="2018-10-31",
+            state_or_territory="FL",
+            residency_required=True,
+            uses_DSED=False,
+            )
+    response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json == {
+    assert response.json()["state_or_territory"] == "FL"
+    assert response.json() == {
         "eligible": False,
         "findings": [
             "Neither head of household nor authorized representative",
@@ -159,6 +134,5 @@ def test_basic_ineligible_payload(get_disaster_mock, get_calculator_mock,
             f"limit of {LIMIT}"
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state_or_territory": "XX"
+        "state_or_territory": "FL"
     }
-    assert not response.json["eligible"]

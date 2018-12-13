@@ -63,7 +63,7 @@ def test_adverse_effect_rule(
 @pytest.mark.parametrize(
     "resided_in_disaster_area_at_disaster_time,"
     "worked_in_disaster_area_at_disaster_time,"
-    "is_residency_required,"
+    "residency_required,"
     "successful, findings",
     [
         (True, True, False, True, ResidencyRule.resided_finding),
@@ -78,7 +78,7 @@ def test_adverse_effect_rule(
 def test_residency_rule(
         resided_in_disaster_area_at_disaster_time,
         worked_in_disaster_area_at_disaster_time,
-        is_residency_required,
+        residency_required,
         successful, findings):
 
     payload = {
@@ -87,7 +87,7 @@ def test_residency_rule(
         "worked_in_disaster_area_at_disaster_time":
             worked_in_disaster_area_at_disaster_time
     }
-    disaster = Disaster(is_residency_required=is_residency_required)
+    disaster = Disaster(residency_required=residency_required)
 
     actual_result = ResidencyRule().execute(payload, disaster=disaster)
     assert actual_result == Result(successful, findings=[findings])

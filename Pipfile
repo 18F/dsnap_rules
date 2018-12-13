@@ -9,10 +9,10 @@ gunicorn = "*"
 jsonschema = "*"
 pytest = "*"
 pytest-cov = "*"
-Flask = "*"
-flask-sqlalchemy = "*"
 "psycopg2" = "*"
-flask-migrate = "*"
+django = "*"
+dj-database-url = "*"
+pytest-django = "*"
 
 [dev-packages]
 ipython = "*"

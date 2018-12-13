@@ -4,6 +4,8 @@ applications:
   buildpack: python_buildpack
   memory: 512M
   routes:
-    - route: dsnap_rules.app.cloud.gov
+    - route: dsnap-rules-dev.app.cloud.gov
   services:
     - dsnap-eligibility-db
+  env:
+    DJANGO_SETTINGS_MODULE: rules_service.settings.cloud

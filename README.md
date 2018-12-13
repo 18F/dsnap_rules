@@ -21,6 +21,7 @@ Install project dependencies using:
 ```
 pipenv install
 ```
+Once the dependencies have been installed, you can run the rest of the commands by dropping into a virtual environment shell by running `pipenv shell`, or by preceding each command with a `pipenv run`.
 
 ### Testing
 
@@ -29,22 +30,33 @@ Run tests using:
 pytest
 ```
 
-#### Testing the deployed application
-The application has also been deployed in cloud.gov and is available at https://dsnap_rules.app.cloud.gov.
+#### Testing the demo application
+A demo version of the application has been deployed in cloud.gov and is available at https://dsnap-rules-demo.app.cloud.gov.
 
 The `examples` directory has examples for eligible, ineligible and invalid payloads.
 
 Submit examples from the directory `examples`. E.g.,
 ```
-curl -X POST -d @examples/eligible_request.json https://dsnap_rules.app.cloud.gov
+curl -X POST -d @examples/eligible_request.json https://dsnap-rules-demo.app.cloud.gov
 ```
 
-In addition, there is a quick-and-dirty [form](https://dsnap_rules.app.cloud.gov) that can be used to test the application.
+In addition, there is a quick-and-dirty [form](https://dsnap-rules.app.cloud-demo.gov) that can be used to test the application.
 
 ### Running locally
-Start the app using:
+Create a local PostgreSQL database. Set the environment variable DATABASE_URL to point to this database, e.g.:
 ```
-FLASK_APP=dsnap_rules.app python -m flask run
+export DATABASE_URL=postgresql:///dsnap
+```
+If this variable is not set, it defaults to `postgresql:///dsnap` in development/local environments.
+
+Migrate the database, if necessary, using:
+```
+python manage.py migrate
 ```
 
-This will make the application available at `http://localhost:5000`, assuming that the application is running on the default port of 5000. To change the port and other settings, see http://flask.pocoo.org/docs/1.0/cli/#run-the-development-server.
+Start the app using:
+```
+python manage.py runserver
+```
+
+This will make the application available at `http://localhost:8000`, by default. To change the port and other settings, see https://docs.djangoproject.com/en/2.1/ref/django-admin/#runserver.

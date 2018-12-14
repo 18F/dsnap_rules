@@ -85,3 +85,11 @@ jobs:
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_DEMO_USER -p $CF_DSNAP_DEMO_PASS -o gsa-10x-prototyping -s dsnap_demo
               cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
             fi
+workflows:
+  version: 2
+  also-trigger-builds-on-tags:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/

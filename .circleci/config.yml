@@ -1,5 +1,4 @@
 # Python CircleCI 2.0 configuration file
-#
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2
@@ -46,7 +45,6 @@ jobs:
             curl -L "https://cli.run.pivotal.io/stable?release=linux64-binary" | tar xzv -C $HOME/bin
             cf install-plugin autopilot -f -r CF-Community
 
-
       - save_cache:
           paths:
             - ./venv
@@ -62,8 +60,33 @@ jobs:
           destination: test-reports
 
       - run:
-          name: deploy
+          name: Login to cloud.gov
           command: |
             export PATH=$HOME/bin:$PATH
             cf login -a https://api.fr.cloud.gov -u $CF_USER -p $CF_PASS -o gsa-10x-prototyping -s dev
-            cf zero-downtime-push dsnap_rules -f manifest_dev.yml
+      - run:
+          name: Deploy to dev
+          command: |
+            if [[ "${CIRCLE_BRANCH}" != "master" ]]; then
+              export PATH=$HOME/bin:$PATH
+              cf target -s dev
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_dev.yml
+            fi
+      - run:
+          name: Deploy to staging
+          command: |
+            if [[ "${CIRCLE_BRANCH}" == "master" && -z "${CIRCLE_TAG}" ]]; then
+              export PATH=$HOME/bin:$PATH
+              cf target -s staging
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+            fi
+      - run:
+          name: Deploy to prod and demo
+          command: |
+            if [[ "${CIRCLE_BRANCH}" == "master" && ! -z "${CIRCLE_TAG}" ]]; then
+              export PATH=$HOME/bin:$PATH
+              cf target -s prod
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+              cf target -s demo
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+            fi

@@ -81,9 +81,9 @@ jobs:
             if [[ -n "${CIRCLE_TAG}" ]]; then
               export PATH=$HOME/bin:$PATH
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_PROD_USER -p $CF_DSNAP_PROD_PASS -o gsa-10x-prototyping -s dsnap_prod
-              cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_prod.yml
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_DEMO_USER -p $CF_DSNAP_DEMO_PASS -o gsa-10x-prototyping -s dsnap_demo
-              cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+              cf zero-downtime-push dsnap_rules -f manifests/manifest_demo.yml
             fi
 workflows:
   version: 2

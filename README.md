@@ -30,6 +30,17 @@ Run tests using:
 pytest
 ```
 
+### Deployment
+
+The project has been set up for continuous integration and deployment through CirclCI and cloud.gov. The cloud.gov spaces, URLs and deployment triggers are:
+
+| Space | URL | Deployment trigger |
+|-------|-----|--------------------|
+| dev   | https://dsnap-rules-dev.app.cloud.gov | Any push to a branch other than `master`|
+| staging   | https://dsnap-rules-staging.app.cloud.gov | Any push to `master`|
+| prod   | https://dsnap-rules.app.cloud.gov | Any tag push with a tag that begins with 'v'|
+| demo   | https://dsnap-rules-demo.app.cloud.gov | Any tag push with a tag that begins with 'v'|
+
 #### Testing the demo application
 A demo version of the application has been deployed in cloud.gov and is available at https://dsnap-rules-demo.app.cloud.gov.
 

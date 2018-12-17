@@ -66,6 +66,8 @@ jobs:
               export PATH=$HOME/bin:$PATH
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_DEV_USER -p $CF_DSNAP_DEV_PASS -o gsa-10x-prototyping -s dsnap_dev
               cf zero-downtime-push dsnap_rules -f manifests/manifest_dev.yml
+            else
+              echo "Skipped"
             fi
       - run:
           name: Deploy to staging
@@ -74,6 +76,8 @@ jobs:
               export PATH=$HOME/bin:$PATH
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_STAGING_USER -p $CF_DSNAP_STAGING_PASS -o gsa-10x-prototyping -s dsnap_staging
               cf zero-downtime-push dsnap_rules -f manifests/manifest_staging.yml
+            else
+              echo "Skipped"
             fi
       - run:
           name: Deploy to prod and demo
@@ -84,10 +88,12 @@ jobs:
               cf zero-downtime-push dsnap_rules -f manifests/manifest_prod.yml
               cf login -a https://api.fr.cloud.gov -u $CF_DSNAP_DEMO_USER -p $CF_DSNAP_DEMO_PASS -o gsa-10x-prototyping -s dsnap_demo
               cf zero-downtime-push dsnap_rules -f manifests/manifest_demo.yml
+            else
+              echo "Skipped"
             fi
 workflows:
   version: 2
-  also-trigger-builds-on-tags:
+  build-on--branches-and-tags:
     jobs:
       - build:
           filters:

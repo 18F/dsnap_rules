@@ -2,7 +2,9 @@ class Result:
     """ A Result object encapsulates a `bool` indicator of success, a list of
     findings, and any metrics that were computed by the executed results.
     """
-    def __init__(self, successful, findings, metrics={}):
+    def __init__(self, successful, findings, metrics=None):
+        if metrics is None:
+            metrics = {}
         self.successful = successful
         self.findings = findings
         self.metrics = metrics
@@ -33,6 +35,9 @@ class SimplePredicateRule(Rule):
         result = self.predicate(payload, disaster)
         finding = self.success_finding if result else self.failure_finding
         return Result(result, [finding])
+
+    def predicate(self, payload, disaster):
+        pass
 
 
 class And(Rule):

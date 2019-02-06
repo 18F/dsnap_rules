@@ -13,6 +13,7 @@ pytest-cov = "*"
 django = "*"
 dj-database-url = "*"
 pytest-django = "*"
+whitenoise = "*"
 
 [dev-packages]
 ipython = "*"

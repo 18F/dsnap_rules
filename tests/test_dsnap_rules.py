@@ -2,14 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
+from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
+                                     IncomeAndResourceRule, ResidencyRule)
 from dsnap_rules.models import Disaster
 from dsnap_rules.rules import And, Result
-from dsnap_rules.dsnap_rules import (
-    AdverseEffectRule,
-    AuthorizedRule,
-    IncomeAndResourceRule,
-    ResidencyRule,
-)
 
 
 @pytest.mark.parametrize(

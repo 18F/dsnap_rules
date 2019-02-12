@@ -3,15 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
+from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
+                                     ConflictingUSDAProgramRule,
+                                     FoodPurchaseRule, ResidencyRule,
+                                     SNAPSupplementalBenefitsRule)
 from dsnap_rules.models import Disaster
-from dsnap_rules.dsnap_rules import (
-    AdverseEffectRule,
-    AuthorizedRule,
-    ConflictingUSDAProgramRule,
-    FoodPurchaseRule,
-    ResidencyRule,
-    SNAPSupplementalBenefitsRule
-)
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",

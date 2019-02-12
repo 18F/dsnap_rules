@@ -1,5 +1,5 @@
 from . import income_allotment_calculator
-from .rules import Rule, Result, SimplePredicateRule
+from .rules import Result, Rule, SimplePredicateRule
 
 
 class AuthorizedRule(SimplePredicateRule):

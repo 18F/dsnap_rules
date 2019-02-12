@@ -1,7 +1,7 @@
 # flake8: noqa
-from .base import *
 import dj_database_url
 
+from .base import *
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'Just a simple secret key for development'

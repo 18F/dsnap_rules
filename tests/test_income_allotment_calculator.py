@@ -1,8 +1,7 @@
 import pytest
 
-from dsnap_rules.income_allotment_calculator import (
+from dsnap_rules.income_allotment_calculator import \
     IncomeAndAllotmentCalculator
-)
 
 
 def test_non_ascending_limits():

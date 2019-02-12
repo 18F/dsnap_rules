@@ -1,6 +1,6 @@
 import pytest
-
 from jsonschema.exceptions import ValidationError
+
 from dsnap_rules.validate import validate
 
 

@@ -12,18 +12,27 @@ class Result:
     def __eq__(self, other):
         return (
             self.successful == other.successful
-            and sorted(self.findings) == sorted(other.findings)
+            and (
+                sorted(self.findings, key=lambda x: x["rule"])
+                == sorted(other.findings, key=lambda x: x["rule"]))
             and self.metrics == other.metrics)
 
 
 class Rule:
-    """A Rule is a piece of logic that can be executed with a payload and a disaster
-    to provide a result. A payload is a `dict` that contains data attributes
-    used by the rule. A disaster is an instance of Disaster which provides
-    information on the disaster for which this D-SNAP is being run.
+    """A Rule is a piece of logic that can be executed with a payload and a
+    disaster to provide a result. A payload is a `dict` that contains data
+    attributes used by the rule. A disaster is an instance of Disaster which
+    provides information on the disaster for which this D-SNAP is being run.
     """
     def execute(self, payload, disaster):
         pass
+
+    def assemble_findings(self, result, text):
+        return [{
+            "rule": self.__class__.__name__,
+            "succeeded": result,
+            "text": text
+        }]
 
 
 class SimplePredicateRule(Rule):
@@ -34,7 +43,7 @@ class SimplePredicateRule(Rule):
     def execute(self, payload, disaster):
         result = self.predicate(payload, disaster)
         finding = self.success_finding if result else self.failure_finding
-        return Result(result, [finding])
+        return Result(result, self.assemble_findings(result, finding))
 
     def predicate(self, payload, disaster):
         pass

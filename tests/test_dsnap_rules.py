@@ -1,4 +1,4 @@
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 import pytest
 
@@ -13,7 +13,7 @@ from dsnap_rules.dsnap_rules import (
 
 
 @pytest.mark.parametrize(
-    "is_head_of_household, is_authorized_representative, successful, findings",
+    "is_head_of_household, is_authorized_representative, successful, finding",
     [
         (True, True, True, AuthorizedRule.success_finding),
         (True, False, True, AuthorizedRule.success_finding),
@@ -21,7 +21,7 @@ from dsnap_rules.dsnap_rules import (
         (False, False, False, AuthorizedRule.failure_finding),
     ])
 def test_authorized_rule(is_head_of_household, is_authorized_representative,
-                         successful, findings):
+                         successful, finding):
 
     payload = {
         "is_head_of_household": is_head_of_household,
@@ -29,12 +29,16 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
     }
 
     actual_result = AuthorizedRule().execute(payload, disaster=None)
-    assert actual_result == Result(successful, findings=[findings])
+    assert actual_result == Result(successful, findings=[{
+                "rule": "AuthorizedRule",
+                "succeeded": successful,
+                "text": finding
+            }])
 
 
 @pytest.mark.parametrize(
     "has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,"
-    "incurred_deductible_disaster_expenses, successful, findings",
+    "incurred_deductible_disaster_expenses, successful, finding",
     [
         (True, True, True, True, AdverseEffectRule.success_finding),
         (True, True, False, True, AdverseEffectRule.success_finding),
@@ -47,7 +51,7 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
     ])
 def test_adverse_effect_rule(
         has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,
-        incurred_deductible_disaster_expenses, successful, findings):
+        incurred_deductible_disaster_expenses, successful, finding):
 
     payload = {
         "has_lost_or_inaccessible_income": has_lost_or_inaccessible_income,
@@ -57,14 +61,18 @@ def test_adverse_effect_rule(
     }
 
     actual_result = AdverseEffectRule().execute(payload, disaster=None)
-    assert actual_result == Result(successful, findings=[findings])
+    assert actual_result == Result(successful, findings=[{
+                "rule": "AdverseEffectRule",
+                "succeeded": successful,
+                "text": finding
+            }])
 
 
 @pytest.mark.parametrize(
     "resided_in_disaster_area_at_disaster_time,"
     "worked_in_disaster_area_at_disaster_time,"
     "residency_required,"
-    "successful, findings",
+    "successful, finding",
     [
         (True, True, False, True, ResidencyRule.resided_finding),
         (True, True, True, True, ResidencyRule.resided_finding),
@@ -79,7 +87,7 @@ def test_residency_rule(
         resided_in_disaster_area_at_disaster_time,
         worked_in_disaster_area_at_disaster_time,
         residency_required,
-        successful, findings):
+        successful, finding):
 
     payload = {
         "resided_in_disaster_area_at_disaster_time":
@@ -90,7 +98,11 @@ def test_residency_rule(
     disaster = Disaster(residency_required=residency_required)
 
     actual_result = ResidencyRule().execute(payload, disaster=disaster)
-    assert actual_result == Result(successful, findings=[findings])
+    assert actual_result == Result(successful, findings=[{
+                "rule": "ResidencyRule",
+                "succeeded": successful,
+                "text": finding
+            }])
 
 
 def test_the_and_rule():
@@ -105,9 +117,15 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(True,
-               findings=[
-                   "Either head of household or authorized representative",
-                   "Experienced disaster-related adverse effects"])
+               findings=[{
+                "rule": "AuthorizedRule",
+                "succeeded": True,
+                "text": AuthorizedRule.success_finding,
+                }, {
+                "rule": "AdverseEffectRule",
+                "succeeded": True,
+                "text": AdverseEffectRule.success_finding
+                }])
     )
 
     payload["has_inaccessible_liquid_resources"] = False
@@ -115,9 +133,15 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(False,
-               findings=[
-                   "Either head of household or authorized representative",
-                   "Did not experience any disaster-related adverse effect"])
+               findings=[{
+                "rule": "AuthorizedRule",
+                "succeeded": True,
+                "text": AuthorizedRule.success_finding
+                }, {
+                "rule": "AdverseEffectRule",
+                "succeeded": False,
+                "text": AdverseEffectRule.failure_finding
+                }])
     )
 
     payload["is_head_of_household"] = False
@@ -126,9 +150,15 @@ def test_the_and_rule():
         And(AuthorizedRule(), AdverseEffectRule()),
         payload,
         Result(False,
-               findings=[
-                   "Neither head of household nor authorized representative",
-                   "Experienced disaster-related adverse effects"])
+               findings=[{
+                "rule": "AuthorizedRule",
+                "succeeded": False,
+                "text": AuthorizedRule.failure_finding,
+                }, {
+                "rule": "AdverseEffectRule",
+                "succeeded": True,
+                "text": AdverseEffectRule.success_finding
+                }])
     )
 
 
@@ -157,8 +187,11 @@ def test_income_and_resource(get_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(True,
-               findings=[
-                   f"Gross income {gross_income} within limit of {LIMIT}"],
+               findings=[{
+                "rule": "IncomeAndResourceRule",
+                "succeeded": True,
+                "text": f"Gross income {gross_income} within limit of {LIMIT}"
+                }],
                metrics={"allotment": ALLOTMENT})
     )
 
@@ -169,8 +202,11 @@ def test_income_and_resource(get_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(False,
-               findings=[
-                   f"Gross income {gross_income} exceeds limit of {LIMIT}"])
+               findings=[{
+                "rule": "IncomeAndResourceRule",
+                "succeeded": False,
+                "text": f"Gross income {gross_income} exceeds limit of {LIMIT}"
+                }])
     )
 
 
@@ -199,10 +235,14 @@ def test_DSED_calculation(get_calculator_mock):
         IncomeAndResourceRule(),
         payload,
         Result(False,
-               findings=[
-                   f"Gross income {gross_income} exceeds limit of {LIMIT}"]),
+               findings=[{
+                "rule": "IncomeAndResourceRule",
+                "succeeded": False,
+                "text": f"Gross income {gross_income} exceeds limit of {LIMIT}"
+                }]),
         disaster=disaster
     )
+
 
 def assert_result(rule, payload, expected_result, disaster=None):
     if disaster is None:

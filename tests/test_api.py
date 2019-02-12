@@ -4,6 +4,14 @@ from unittest.mock import patch
 import pytest
 
 from dsnap_rules.models import Disaster
+from dsnap_rules.dsnap_rules import (
+    AdverseEffectRule,
+    AuthorizedRule,
+    ConflictingUSDAProgramRule,
+    FoodPurchaseRule,
+    ResidencyRule,
+    SNAPSupplementalBenefitsRule
+)
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
@@ -86,18 +94,47 @@ def test_valid_disaster(get_calculator_mock, client):
     assert response.json() == {
         "eligible": True,
         "findings": [
-            "Either head of household or authorized representative",
-            "Experienced disaster-related adverse effects",
-            "Either purchased or plans to purchase food during benefit period",
-            "Resided in disaster area at disaster time",
-            "Does not receive benefits from conflicting USDA programs",
-            "Does not receive benefits from SNAP",
-            f"Gross income {payload['total_take_home_income']} within "
-            f"limit of {LIMIT}"
+            {
+                "rule": "AuthorizedRule",
+                "succeeded": True,
+                "text": AuthorizedRule.success_finding
+            },
+            {
+                "rule": "AdverseEffectRule",
+                "succeeded": True,
+                "text": AdverseEffectRule.success_finding
+            },
+            {
+                "rule": "FoodPurchaseRule",
+                "succeeded": True,
+                "text": FoodPurchaseRule.success_finding
+            },
+            {
+                "rule": "ResidencyRule",
+                "succeeded": True,
+                "text": ResidencyRule.resided_finding
+            },
+            {
+                "rule": "ConflictingUSDAProgramRule",
+                "succeeded": True,
+                "text": ConflictingUSDAProgramRule.success_finding
+            },
+            {
+                "rule": "SNAPSupplementalBenefitsRule",
+                "succeeded": True,
+                "text": SNAPSupplementalBenefitsRule.success_finding
+            },
+            {
+                "rule": "IncomeAndResourceRule",
+                "succeeded": True,
+                "text": f"Gross income {payload['total_take_home_income']} "
+                        f"within limit of {LIMIT}"
+            },
         ],
         "metrics": {"allotment": ALLOTMENT},
         "state_or_territory": "FL"
     }
+
 
 @pytest.mark.django_db
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
@@ -124,14 +161,42 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     assert response.json() == {
         "eligible": False,
         "findings": [
-            "Neither head of household nor authorized representative",
-            "Experienced disaster-related adverse effects",
-            "Either purchased or plans to purchase food during benefit period",
-            "Resided in disaster area at disaster time",
-            "Does not receive benefits from conflicting USDA programs",
-            "Does not receive benefits from SNAP",
-            f"Gross income {payload['total_take_home_income']} within "
-            f"limit of {LIMIT}"
+            {
+                "rule": "AuthorizedRule",
+                "succeeded": False,
+                "text": AuthorizedRule.failure_finding
+            },
+            {
+                "rule": "AdverseEffectRule",
+                "succeeded": True,
+                "text": AdverseEffectRule.success_finding
+            },
+            {
+                "rule": "FoodPurchaseRule",
+                "succeeded": True,
+                "text": FoodPurchaseRule.success_finding
+            },
+            {
+                "rule": "ResidencyRule",
+                "succeeded": True,
+                "text": ResidencyRule.resided_finding
+            },
+            {
+                "rule": "ConflictingUSDAProgramRule",
+                "succeeded": True,
+                "text": ConflictingUSDAProgramRule.success_finding
+            },
+            {
+                "rule": "SNAPSupplementalBenefitsRule",
+                "succeeded": True,
+                "text": SNAPSupplementalBenefitsRule.success_finding
+            },
+            {
+                "rule": "IncomeAndResourceRule",
+                "succeeded": True,
+                "text": f"Gross income {payload['total_take_home_income']} "
+                        f"within limit of {LIMIT}"
+            },
         ],
         "metrics": {"allotment": ALLOTMENT},
         "state_or_territory": "FL"

@@ -1,3 +1,4 @@
+# flake8: noqa
 from .base import *
 import dj_database_url
 

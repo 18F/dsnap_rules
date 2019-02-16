@@ -13,4 +13,4 @@ class Disaster(models.Model):
     uses_DSED = models.BooleanField()
 
     def __str__(self):
-        return '{}: {}'.format(self.disaster_request_no, self.title)
+        return f'{self.disaster_request_no}: {self.title}'

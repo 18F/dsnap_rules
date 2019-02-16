@@ -19,12 +19,13 @@ class Result:
 
 
 class Rule:
-    """A Rule is a piece of logic that can be executed with a payload and a
-    disaster to provide a result. A payload is a `dict` that contains data
-    attributes used by the rule. A disaster is an instance of Disaster which
-    provides information on the disaster for which this D-SNAP is being run.
+    """A Rule is a piece of logic that can be executed with an application and
+    a disaster to provide a result. An application is an object that contains
+    data attributes used by the rule. A disaster is an instance of Disaster
+    which provides information on the disaster for which this D-SNAP is being
+    run.
     """
-    def execute(self, payload, disaster):
+    def execute(self, application, disaster):
         pass
 
     def assemble_findings(self, result, text):
@@ -40,12 +41,12 @@ class SimplePredicateRule(Rule):
     simple and the findings for success and failure are static strings.
     """
 
-    def execute(self, payload, disaster):
-        result = self.predicate(payload, disaster)
+    def execute(self, application, disaster):
+        result = self.predicate(application, disaster)
         finding = self.success_finding if result else self.failure_finding
         return Result(result, self.assemble_findings(result, finding))
 
-    def predicate(self, payload, disaster):
+    def predicate(self, application, disaster):
         pass
 
 
@@ -53,12 +54,12 @@ class And(Rule):
     def __init__(self, *rules):
         self.rules = rules
 
-    def execute(self, payload, disaster):
+    def execute(self, application, disaster):
         overall_success = True
         overall_findings = []
         overall_metrics = {}
         for rule in self.rules:
-            result = rule.execute(payload, disaster)
+            result = rule.execute(application, disaster)
             overall_success = overall_success and result.successful
             overall_findings.extend(result.findings)
             overall_metrics.update(result.metrics)

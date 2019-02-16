@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from dsnap_rules.dsnap_application import DSNAPApplication
 from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                                      IncomeAndResourceRule, ResidencyRule)
 from dsnap_rules.models import Disaster
@@ -23,8 +24,9 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
         "is_head_of_household": is_head_of_household,
         "is_authorized_representative": is_authorized_representative,
     }
+    application = DSNAPApplication(payload)
 
-    actual_result = AuthorizedRule().execute(payload, disaster=None)
+    actual_result = AuthorizedRule().execute(application, disaster=None)
     assert actual_result == Result(successful, findings=[{
                 "rule": "AuthorizedRule",
                 "succeeded": successful,
@@ -55,8 +57,9 @@ def test_adverse_effect_rule(
         "incurred_deductible_disaster_expenses":
             incurred_deductible_disaster_expenses,
     }
+    application = DSNAPApplication(payload)
 
-    actual_result = AdverseEffectRule().execute(payload, disaster=None)
+    actual_result = AdverseEffectRule().execute(application, disaster=None)
     assert actual_result == Result(successful, findings=[{
                 "rule": "AdverseEffectRule",
                 "succeeded": successful,
@@ -91,9 +94,10 @@ def test_residency_rule(
         "worked_in_disaster_area_at_disaster_time":
             worked_in_disaster_area_at_disaster_time
     }
+    application = DSNAPApplication(payload)
     disaster = Disaster(residency_required=residency_required)
 
-    actual_result = ResidencyRule().execute(payload, disaster=disaster)
+    actual_result = ResidencyRule().execute(application, disaster=disaster)
     assert actual_result == Result(successful, findings=[{
                 "rule": "ResidencyRule",
                 "succeeded": successful,
@@ -109,9 +113,10 @@ def test_the_and_rule():
         "has_inaccessible_liquid_resources": True,
         "incurred_deductible_disaster_expenses": False,
     }
+    application = DSNAPApplication(payload)
     assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
-        payload,
+        application,
         Result(True,
                findings=[{
                 "rule": "AuthorizedRule",
@@ -124,10 +129,10 @@ def test_the_and_rule():
                 }])
     )
 
-    payload["has_inaccessible_liquid_resources"] = False
+    application.has_inaccessible_liquid_resources = False
     assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
-        payload,
+        application,
         Result(False,
                findings=[{
                 "rule": "AuthorizedRule",
@@ -140,11 +145,11 @@ def test_the_and_rule():
                 }])
     )
 
-    payload["is_head_of_household"] = False
-    payload["has_inaccessible_liquid_resources"] = True
+    application.is_head_of_household = False
+    application.has_inaccessible_liquid_resources = True
     assert_result(
         And(AuthorizedRule(), AdverseEffectRule()),
-        payload,
+        application,
         Result(False,
                findings=[{
                 "rule": "AuthorizedRule",
@@ -177,11 +182,12 @@ def test_income_and_resource(get_calculator_mock):
         "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
         "size_of_household": 4
     }
+    application = DSNAPApplication(payload)
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
     assert_result(
         IncomeAndResourceRule(),
-        payload,
+        application,
         Result(True,
                findings=[{
                 "rule": "IncomeAndResourceRule",
@@ -191,12 +197,12 @@ def test_income_and_resource(get_calculator_mock):
                metrics={"allotment": ALLOTMENT})
     )
 
-    payload["total_take_home_income"] = VERY_LARGE_TAKE_HOME_INCOME
+    application.total_take_home_income = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
                     - DEDUCTIBLE_DISASTER_EXPENSES)
     assert_result(
         IncomeAndResourceRule(),
-        payload,
+        application,
         Result(False,
                findings=[{
                 "rule": "IncomeAndResourceRule",
@@ -223,13 +229,14 @@ def test_DSED_calculation(get_calculator_mock):
         "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
         "size_of_household": 4
     }
+    application = DSNAPApplication(payload)
     disaster = Disaster(uses_DSED=True)
     # Don't subtract disaster expenses when DSED in use
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES)
 
     assert_result(
         IncomeAndResourceRule(),
-        payload,
+        application,
         Result(False,
                findings=[{
                 "rule": "IncomeAndResourceRule",

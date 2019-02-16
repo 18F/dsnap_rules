@@ -6,9 +6,9 @@ class AuthorizedRule(SimplePredicateRule):
     success_finding = "Either head of household or authorized representative"
     failure_finding = "Neither head of household nor authorized representative"
 
-    def predicate(self, payload, disaster):
-        return (payload["is_head_of_household"]
-                or payload["is_authorized_representative"])
+    def predicate(self, application, disaster):
+        return (application.is_head_of_household
+                or application.is_authorized_representative)
 
 
 class FoodPurchaseRule(SimplePredicateRule):
@@ -22,9 +22,9 @@ class FoodPurchaseRule(SimplePredicateRule):
     failure_finding = "Neither purchased nor plans to purchase food during "\
                       "benefit period"
 
-    def predicate(self, payload, disaster):
-        return (payload["plans_to_purchase_food_during_benefit_period"]
-                or payload["purchased_food_during_benefit_period"])
+    def predicate(self, application, disaster):
+        return (application.plans_to_purchase_food_during_benefit_period
+                or application.purchased_food_during_benefit_period)
 
 
 class AdverseEffectRule(SimplePredicateRule):
@@ -37,11 +37,11 @@ class AdverseEffectRule(SimplePredicateRule):
     success_finding = "Experienced disaster-related adverse effects"
     failure_finding = "Did not experience any disaster-related adverse effect"
 
-    def predicate(self, payload, disaster):
+    def predicate(self, application, disaster):
         return (
-            payload["has_lost_or_inaccessible_income"]
-            or payload["has_inaccessible_liquid_resources"]
-            or payload["incurred_deductible_disaster_expenses"])
+            application.has_lost_or_inaccessible_income
+            or application.has_inaccessible_liquid_resources
+            or application.incurred_deductible_disaster_expenses)
 
 
 class ResidencyRule(Rule):
@@ -60,12 +60,12 @@ class ResidencyRule(Rule):
     failure_finding = "Did not reside or work in disaster area at disaster "\
                       "time"
 
-    def execute(self, payload, disaster):
+    def execute(self, application, disaster):
         result = False
-        if payload["resided_in_disaster_area_at_disaster_time"]:
+        if application.resided_in_disaster_area_at_disaster_time:
             finding = self.resided_finding
             result = True
-        elif payload["worked_in_disaster_area_at_disaster_time"]:
+        elif application.worked_in_disaster_area_at_disaster_time:
             if disaster.residency_required:
                 finding = self.worked_ineligible_finding
                 result = False
@@ -88,8 +88,8 @@ class SNAPSupplementalBenefitsRule(SimplePredicateRule):
     failure_finding = "SNAP beneficiaries should apply for supplemental "\
                       "benefits through SNAP"
 
-    def predicate(self, payload, disaster):
-        return not payload["receives_SNAP_benefits"]
+    def predicate(self, application, disaster):
+        return not application.receives_SNAP_benefits
 
 
 class ConflictingUSDAProgramRule(SimplePredicateRule):
@@ -102,10 +102,10 @@ class ConflictingUSDAProgramRule(SimplePredicateRule):
                       "programs"
     failure_finding = "Receives benefits from conflicting USDA programs"
 
-    def predicate(self, payload, disaster):
+    def predicate(self, application, disaster):
         return not(
-            payload["receives_FDPIR_benefits"]
-            or payload["receives_TEFAP_food_distribution"])
+            application.receives_FDPIR_benefits
+            or application.receives_TEFAP_food_distribution)
 
 
 class IncomeAndResourceRule(Rule):
@@ -122,10 +122,10 @@ class IncomeAndResourceRule(Rule):
     expense.
     """
 
-    def execute(self, payload, disaster):
-        gross_income = self.disaster_gross_income(payload, disaster)
+    def execute(self, application, disaster):
+        gross_income = self.disaster_gross_income(application, disaster)
         income_limit, allotment = self.get_limit_and_allotment(
-            payload, disaster)
+            application, disaster)
         result = gross_income <= income_limit
         if result:
             finding = (
@@ -141,18 +141,18 @@ class IncomeAndResourceRule(Rule):
             metrics = {}
         return Result(result, self.assemble_findings(result, finding), metrics)
 
-    def disaster_gross_income(self, payload, disaster):
+    def disaster_gross_income(self, application, disaster):
         return (
-            payload["total_take_home_income"]
-            + payload["accessible_liquid_resources"]
+            application.total_take_home_income
+            + application.accessible_liquid_resources
             - (0 if disaster.uses_DSED
-                else payload["deductible_disaster_expenses"])
+                else application.deductible_disaster_expenses)
         )
 
-    def get_limit_and_allotment(self, payload, disaster):
+    def get_limit_and_allotment(self, application, disaster):
         calculator = income_allotment_calculator.get_calculator(
                         disaster)
         return (
-            calculator.get_limit(payload["size_of_household"]),
-            calculator.get_allotment(payload["size_of_household"])
+            calculator.get_limit(application.size_of_household),
+            calculator.get_allotment(application.size_of_household)
         )

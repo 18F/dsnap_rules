@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from jsonschema.exceptions import ValidationError
 
 from .decorators import json_request
+from .dsnap_application import DSNAPApplication
 from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                           ConflictingUSDAProgramRule, FoodPurchaseRule,
                           IncomeAndResourceRule, ResidencyRule,
@@ -39,6 +40,7 @@ def index(request):
         response.status_code = 404
         return response
 
+    application = DSNAPApplication(data)
     result = And(
         AuthorizedRule(),
         AdverseEffectRule(),
@@ -47,7 +49,7 @@ def index(request):
         ConflictingUSDAProgramRule(),
         SNAPSupplementalBenefitsRule(),
         IncomeAndResourceRule()
-    ).execute(data, disaster)
+    ).execute(application, disaster)
 
     return jsonify(
         eligible=result.successful,

@@ -1,5 +1,5 @@
 from . import income_allotment_calculator
-from .rules import Rule, Result, SimplePredicateRule
+from .rules import Result, Rule, SimplePredicateRule
 
 
 class AuthorizedRule(SimplePredicateRule):
@@ -76,7 +76,7 @@ class ResidencyRule(Rule):
             finding = self.failure_finding
             result = False
 
-        return Result(result, [finding])
+        return Result(result, self.assemble_findings(result, finding))
 
 
 class SNAPSupplementalBenefitsRule(SimplePredicateRule):
@@ -139,7 +139,7 @@ class IncomeAndResourceRule(Rule):
                 f"{income_limit}"
             )
             metrics = {}
-        return Result(result, [finding], metrics)
+        return Result(result, self.assemble_findings(result, finding), metrics)
 
     def disaster_gross_income(self, payload, disaster):
         return (

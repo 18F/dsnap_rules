@@ -4,18 +4,13 @@ from django.views.decorators.csrf import csrf_exempt
 from jsonschema.exceptions import ValidationError
 
 from .decorators import json_request
-from .validate import validate
-from .dsnap_rules import (
-    AdverseEffectRule,
-    AuthorizedRule,
-    ConflictingUSDAProgramRule,
-    FoodPurchaseRule,
-    IncomeAndResourceRule,
-    ResidencyRule,
-    SNAPSupplementalBenefitsRule,
-)
-from .rules import And
+from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
+                          ConflictingUSDAProgramRule, FoodPurchaseRule,
+                          IncomeAndResourceRule, ResidencyRule,
+                          SNAPSupplementalBenefitsRule)
 from .models import Disaster
+from .rules import And
+from .validate import validate
 
 
 @csrf_exempt

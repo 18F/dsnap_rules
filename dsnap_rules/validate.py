@@ -1,7 +1,6 @@
 from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError
 
-
 SCHEMA = {
     "$schema": "http://json-schema.org/draft-06/schema#",
 

@@ -4,16 +4,8 @@
     <title>D-SNAP Eligibility</title>
     <meta charset="utf-8">
     <style type="text/css">
-        .column {
-            float: left;
-            width: 50%;
-        }
-
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
+        .row {
+            display: flex;
         }
     </style>
 </head>
@@ -21,7 +13,7 @@
     <h1>D-SNAP Eligibility</h1>
     <h3> This is just a sample service, not an official one! </h3>
     <div class="row">
-        <div class="column">
+        <div>
             <form method=POST class="main-form">
                 <label for="disaster_request_no">Disaster:</label>
                 <select list="disaster_list" id="disaster_request_no" name="disaster_request_no" />
@@ -129,7 +121,7 @@
             </form>
         </div>
 
-        <div class="column"></div>
+        <div>
             <pre id="response"> </pre>
         </div>
     </div>

@@ -23,8 +23,7 @@ class FoodPurchaseRule(SimplePredicateRule):
                       "benefit period"
 
     def predicate(self, application, disaster):
-        return (application.plans_to_purchase_food_during_benefit_period
-                or application.purchased_food_during_benefit_period)
+        return application.purchased_or_plans_to_purchase_food
 
 
 class AdverseEffectRule(SimplePredicateRule):

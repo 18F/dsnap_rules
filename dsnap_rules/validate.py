@@ -11,13 +11,13 @@ SCHEMA = {
         "disaster_expenses": {"type": "object", "properties": {
             "food_loss": {"type": "number", "minimum": 0},
             "home_or_business_repairs": {"type": "number", "minimum": 0},
-            "temporary_shelter_expenses": {"type": "number", "minimum": 0},
-            "evacuation_expenses": {"type": "number", "minimum": 0},
+            "temporary_shelter": {"type": "number", "minimum": 0},
+            "evacuation": {"type": "number", "minimum": 0},
             "home_or_business_property_protection": {
                 "type": "number", "minimum": 0},
-            "personal_injury_medical_expenses": {
+            "personal_injury_medical": {
                 "type": "number", "minimum": 0},
-            "disaster_related_funeral_expenses": {
+            "disaster_related_funeral": {
                 "type": "number", "minimum": 0},
             "disaster_related_pet_boarding_fees": {
                 "type": "number", "minimum": 0},
@@ -25,9 +25,9 @@ SCHEMA = {
                 "type": "number", "minimum": 0},
             "fuel_for_primary_heating_source": {
                 "type": "number", "minimum": 0},
-            "disaster_damaged_vehicle_expenses": {
+            "disaster_damaged_vehicle": {
                 "type": "number", "minimum": 0},
-            "storage_expenses": {"type": "number", "minimum": 0},
+            "storage": {"type": "number", "minimum": 0},
             }
         },
         "disaster_request_no": {"type": "string"},
@@ -37,8 +37,7 @@ SCHEMA = {
         "is_authorized_representative": {"type": "boolean"},
         "is_head_of_household": {"type": "boolean"},
         "resided_in_disaster_area_at_disaster_time": {"type": "boolean"},
-        "plans_to_purchase_food_during_benefit_period": {"type": "boolean"},
-        "purchased_food_during_benefit_period": {"type": "boolean"},
+        "purchased_or_plans_to_purchase_food": {"type": "boolean"},
         "size_of_household": {"type": "integer", "minimum": 1},
         "total_take_home_income": {"type": "number", "minimum": 0},
         "worked_in_disaster_area_at_disaster_time": {"type": "boolean"},
@@ -53,8 +52,7 @@ SCHEMA = {
         "has_lost_or_inaccessible_income",
         "incurred_deductible_disaster_expenses",
         "is_head_of_household",
-        "plans_to_purchase_food_during_benefit_period",
-        "purchased_food_during_benefit_period",
+        "purchased_or_plans_to_purchase_food",
         "resided_in_disaster_area_at_disaster_time",
         "size_of_household",
         "total_take_home_income",

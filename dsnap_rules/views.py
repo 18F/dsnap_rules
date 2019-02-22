@@ -13,6 +13,10 @@ from .models import Disaster
 from .rules import And
 from .validate import validate
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 @csrf_exempt
 @json_request
@@ -30,6 +34,8 @@ def index(request):
         response = jsonify(message=ve.message)
         response.status_code = 400
         return response
+    except Exception:
+        logger.exception("Failed validation")
 
     try:
         disaster = Disaster.objects.get(
@@ -39,24 +45,29 @@ def index(request):
             data["disaster_request_no"]))
         response.status_code = 404
         return response
+    except Exception:
+        logger.exception("Failed to retrieve a disaster")
 
-    application = DSNAPApplication(data)
-    result = And(
-        AuthorizedRule(),
-        AdverseEffectRule(),
-        FoodPurchaseRule(),
-        ResidencyRule(),
-        ConflictingUSDAProgramRule(),
-        SNAPSupplementalBenefitsRule(),
-        IncomeAndResourceRule()
-    ).execute(application, disaster)
+    try:
+        application = DSNAPApplication(data)
+        result = And(
+            AuthorizedRule(),
+            AdverseEffectRule(),
+            FoodPurchaseRule(),
+            ResidencyRule(),
+            ConflictingUSDAProgramRule(),
+            SNAPSupplementalBenefitsRule(),
+            IncomeAndResourceRule()
+        ).execute(application, disaster)
 
-    return jsonify(
-        eligible=result.successful,
-        findings=result.findings,
-        metrics=result.metrics,
-        state=disaster.state.abbreviation
-    )
+        return jsonify(
+            eligible=result.successful,
+            findings=result.findings,
+            metrics=result.metrics,
+            state=disaster.state.abbreviation
+        )
+    except Exception:
+        logger.exception("Failed to execute rules")
 
 
 def jsonify(**kwargs):

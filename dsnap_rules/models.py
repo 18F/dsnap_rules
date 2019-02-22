@@ -8,7 +8,7 @@ class State(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'{self.name}({self.abbreviation})'
+        return f'{self.name}'
 
 
 class Disaster(models.Model):
@@ -49,3 +49,6 @@ class ApplicationPeriod(models.Model):
     begin_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
     counties = models.ManyToManyField(County)
+
+    def __str__(self):
+        return ''

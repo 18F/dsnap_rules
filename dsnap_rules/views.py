@@ -1,3 +1,5 @@
+import logging
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -12,8 +14,6 @@ from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
 from .models import Disaster
 from .rules import And
 from .validate import validate
-
-import logging
 
 logger = logging.getLogger(__name__)
 

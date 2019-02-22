@@ -6,7 +6,7 @@ def get_calculator(disaster, region_category=None):
     if disaster.uses_DSED:
         return DSED_Calculator
 
-    if disaster.state_or_territory == "AK":
+    if disaster.state == "AK":
         if region_category == "URBAN":
             return AK_URBAN_Calculator
         elif region_category == "RURAL1":
@@ -15,11 +15,11 @@ def get_calculator(disaster, region_category=None):
             return AK_RURAL2_Calculator
         else:
             raise Exception("Calculator not found")
-    elif disaster.state_or_territory == "HI":
+    elif disaster.state == "HI":
         return HI_Calculator
-    elif disaster.state_or_territory == "GU":
+    elif disaster.state == "GU":
         return GU_Calculator
-    elif disaster.state_or_territory == "VI":
+    elif disaster.state == "VI":
         return VI_Calculator
     else:
         return DEFAULT_Calculator

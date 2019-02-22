@@ -7,7 +7,10 @@ from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                                      ConflictingUSDAProgramRule,
                                      FoodPurchaseRule, ResidencyRule,
                                      SNAPSupplementalBenefitsRule)
-from dsnap_rules.models import Disaster
+from dsnap_rules.models import (
+    Disaster,
+    State,
+)
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
@@ -74,18 +77,19 @@ def test_valid_disaster(get_calculator_mock, client):
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     Disaster.objects.create(
-            disaster_request_no=payload["disaster_request_no"],
-            title="Disaster in FL",
-            benefit_begin_date="2018-10-01",
-            benefit_end_date="2018-10-31",
-            state_or_territory="FL",
-            residency_required=True,
-            uses_DSED=False,
-            )
+        disaster_request_no=payload["disaster_request_no"],
+        title="Disaster in FL",
+        benefit_begin_date="2018-10-01",
+        benefit_end_date="2018-10-31",
+        state=State.objects.get(abbreviation="FL"),
+        residency_required=True,
+        uses_DSED=False,
+        allows_food_loss_alone=True,
+    )
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json()["state_or_territory"] == "FL"
+    assert response.json()["state"] == "FL"
     assert response.json() == {
         "eligible": True,
         "findings": [
@@ -127,7 +131,7 @@ def test_valid_disaster(get_calculator_mock, client):
             },
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state_or_territory": "FL"
+        "state": "FL"
     }
 
 
@@ -141,18 +145,19 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
     Disaster.objects.create(
-            disaster_request_no=payload["disaster_request_no"],
-            title="Disaster in FL",
-            benefit_begin_date="2018-10-01",
-            benefit_end_date="2018-10-31",
-            state_or_territory="FL",
-            residency_required=True,
-            uses_DSED=False,
-            )
+        disaster_request_no=payload["disaster_request_no"],
+        title="Disaster in FL",
+        benefit_begin_date="2018-10-01",
+        benefit_end_date="2018-10-31",
+        state=State.objects.get(abbreviation="FL"),
+        residency_required=True,
+        uses_DSED=False,
+        allows_food_loss_alone=True,
+    )
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json()["state_or_territory"] == "FL"
+    assert response.json()["state"] == "FL"
     assert response.json() == {
         "eligible": False,
         "findings": [
@@ -194,5 +199,5 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
             },
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state_or_territory": "FL"
+        "state": "FL"
     }

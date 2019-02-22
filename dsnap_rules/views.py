@@ -55,7 +55,7 @@ def index(request):
         eligible=result.successful,
         findings=result.findings,
         metrics=result.metrics,
-        state_or_territory=disaster.state_or_territory
+        state=disaster.state.abbreviation
     )
 
 

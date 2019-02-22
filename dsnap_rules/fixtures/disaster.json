@@ -1,0 +1,156 @@
+[
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 1,
+    "fields": {
+        "disaster_request_no": "DR-4353",
+        "title": "Wildfires and Mudslides",
+        "benefit_begin_date": "2017-12-04",
+        "benefit_end_date": "2018-01-03",
+        "state": "CA",
+        "residency_required": false,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 2,
+    "fields": {
+        "disaster_request_no": "DR-4335",
+        "title": "Irma",
+        "benefit_begin_date": "2017-09-04",
+        "benefit_end_date": "2017-10-03",
+        "state": "VI",
+        "residency_required": true,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 3,
+    "fields": {
+        "disaster_request_no": "DR-4340",
+        "title": "Maria",
+        "benefit_begin_date": "2017-09-14",
+        "benefit_end_date": "2017-10-13",
+        "state": "VI",
+        "residency_required": true,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 4,
+    "fields": {
+        "disaster_request_no": "DR-4344",
+        "title": "Wildfires",
+        "benefit_begin_date": "2017-10-08",
+        "benefit_end_date": "2017-11-07",
+        "state": "CA",
+        "residency_required": false,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 5,
+    "fields": {
+        "disaster_request_no": "DR-4399",
+        "title": "Irma",
+        "benefit_begin_date": "2017-09-05",
+        "benefit_end_date": "2017-10-04",
+        "state": "FL",
+        "residency_required": false,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 6,
+    "fields": {
+        "disaster_request_no": "DR-4332",
+        "title": "Harvey",
+        "benefit_begin_date": "2017-08-23",
+        "benefit_end_date": "2017-09-22",
+        "state": "TX",
+        "residency_required": true,
+        "uses_DSED": true,
+        "allows_food_loss_alone": false
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 7,
+    "fields": {
+        "disaster_request_no": "DR-4331",
+        "title": "Flood",
+        "benefit_begin_date": "2017-07-29",
+        "benefit_end_date": "2017-08-27",
+        "state": "WV",
+        "residency_required": false,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 8,
+    "fields": {
+        "disaster_request_no": "DR-4317",
+        "title": "Floods",
+        "benefit_begin_date": "2017-05-01",
+        "benefit_end_date": "2017-05-31",
+        "state": "MO",
+        "residency_required": true,
+        "uses_DSED": true,
+        "allows_food_loss_alone": false
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 9,
+    "fields": {
+        "disaster_request_no": "DR-4300",
+        "title": "Tornado",
+        "benefit_begin_date": "2017-02-07",
+        "benefit_end_date": "2017-03-08",
+        "state": "LA",
+        "residency_required": true,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 10,
+    "fields": {
+        "disaster_request_no": "DR-4293",
+        "title": "Wildfire",
+        "benefit_begin_date": "2016-11-28",
+        "benefit_end_date": "2016-12-27",
+        "state": "TN",
+        "residency_required": false,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+},
+{
+    "model": "dsnap_rules.disaster",
+    "pk": 11,
+    "fields": {
+        "disaster_request_no": "DR-4285",
+        "title": "Matthew",
+        "benefit_begin_date": "2016-10-07",
+        "benefit_end_date": "2016-10-06",
+        "state": "NC",
+        "residency_required": true,
+        "uses_DSED": false,
+        "allows_food_loss_alone": true
+    }
+}
+]

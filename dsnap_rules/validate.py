@@ -1,8 +1,8 @@
-from jsonschema import Draft4Validator
+from jsonschema import Draft7Validator
 from jsonschema.exceptions import ValidationError
 
 SCHEMA = {
-    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
 
     "type": "object",
 
@@ -66,6 +66,6 @@ SCHEMA = {
 
 def validate(data):
     error_messages = [
-        error.message for error in Draft4Validator(SCHEMA).iter_errors(data)]
+        error.message for error in Draft7Validator(SCHEMA).iter_errors(data)]
     if error_messages:
         raise ValidationError(message=error_messages)

@@ -14,6 +14,9 @@ from dsnap_rules.models import (
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
+    "disaster_expenses": {
+        "food_loss": 0,
+    },
     "is_head_of_household": True,
     "is_authorized_representative": False,
     "has_lost_or_inaccessible_income": False,
@@ -24,7 +27,6 @@ GOOD_PAYLOAD = {
     "incurred_deductible_disaster_expenses": False,
     "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
-    "deductible_disaster_expenses": 0,
     "size_of_household": 4,
     "receives_FDPIR_benefits": False,
     "receives_TEFAP_food_distribution": False,

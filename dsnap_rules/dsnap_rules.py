@@ -145,7 +145,7 @@ class IncomeAndResourceRule(Rule):
             application.total_take_home_income
             + application.accessible_liquid_resources
             - (0 if disaster.uses_DSED
-                else application.deductible_disaster_expenses)
+                else application.deductible_disaster_expenses())
         )
 
     def get_limit_and_allotment(self, application, disaster):

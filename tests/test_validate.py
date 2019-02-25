@@ -4,6 +4,9 @@ from dsnap_rules.validate import validate
 def test_good_data():
     valid, messages = validate({
         "disaster_request_no": "DR-1",
+        "disaster_expenses": {
+            "food_loss": 0
+        },
         "is_head_of_household": True,
         "has_lost_or_inaccessible_income": False,
         "has_inaccessible_liquid_resources": False,
@@ -14,7 +17,6 @@ def test_good_data():
         "size_of_household": 2,
         "total_take_home_income": 10,
         "accessible_liquid_resources": 0,
-        "deductible_disaster_expenses": 4.5,
         "receives_FDPIR_benefits": True,
         "receives_TEFAP_food_distribution": False,
         "receives_SNAP_benefits": False,
@@ -33,6 +35,7 @@ def test_missing_required_field():
     assert set(messages) == set([
         "'accessible_liquid_resources' is a required property",
         "'disaster_request_no' is a required property",
+        "'disaster_expenses' is a required property",
         "'has_inaccessible_liquid_resources' is a required property",
         "'purchased_or_plans_to_purchase_food' is a required property",
         "'resided_in_disaster_area_at_disaster_time' is a required property",

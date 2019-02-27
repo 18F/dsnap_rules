@@ -36,7 +36,7 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
 
 @pytest.mark.parametrize(
     "has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,"
-    "incurred_deductible_disaster_expenses, successful, finding",
+    "has_disaster_expenses, successful, finding",
     [
         (True, True, True, True, AdverseEffectRule.success_finding),
         (True, True, False, True, AdverseEffectRule.success_finding),
@@ -47,19 +47,54 @@ def test_authorized_rule(is_head_of_household, is_authorized_representative,
         (False, False, True, True, AdverseEffectRule.success_finding),
         (False, False, False, False, AdverseEffectRule.failure_finding),
     ])
-def test_adverse_effect_rule(
+def test_adverse_effect_rule_independent_of_food_loss_alone_setting(
         has_lost_or_inaccessible_income, has_inaccessible_liquid_resources,
-        incurred_deductible_disaster_expenses, successful, finding):
-
+        has_disaster_expenses, successful, finding):
+    HOME_REPAIR_EXPENSES = 200  # Test food loss alone rules separately
     payload = {
         "has_lost_or_inaccessible_income": has_lost_or_inaccessible_income,
         "has_inaccessible_liquid_resources": has_inaccessible_liquid_resources,
-        "incurred_deductible_disaster_expenses":
-            incurred_deductible_disaster_expenses,
+        "disaster_expenses": {
+            "home_or_business_repairs":
+                HOME_REPAIR_EXPENSES if has_disaster_expenses else 0
+        }
     }
     application = DSNAPApplication(payload)
+    disaster = Disaster(uses_DSED=False, allows_food_loss_alone=True)
 
-    actual_result = AdverseEffectRule().execute(application, disaster=None)
+    actual_result = AdverseEffectRule().execute(application, disaster=disaster)
+    assert actual_result == Result(successful, findings=[{
+                "rule": "AdverseEffectRule",
+                "succeeded": successful,
+                "text": finding
+            }])
+
+
+@pytest.mark.parametrize(
+    "food_loss_alone, food_loss,"
+    "non_food_loss, successful, finding",
+    [
+        (True, 100, 0, True, AdverseEffectRule.success_finding),
+        (True, 0, 100, True, AdverseEffectRule.success_finding),
+        (False, 100, 0, False, AdverseEffectRule.failure_finding),
+        (False, 0, 100, True, AdverseEffectRule.success_finding),
+    ])
+def test_adverse_effect_rule_with_food_loss_alone_setting(
+        food_loss_alone, food_loss,
+        non_food_loss, successful, finding):
+    payload = {
+        "has_lost_or_inaccessible_income": False,
+        "has_inaccessible_liquid_resources": False,
+        "disaster_expenses": {
+            "food_loss": food_loss,
+            "home_or_business_repairs": non_food_loss
+        }
+    }
+    application = DSNAPApplication(payload)
+    disaster = Disaster(uses_DSED=False,
+                        allows_food_loss_alone=food_loss_alone)
+
+    actual_result = AdverseEffectRule().execute(application, disaster=disaster)
     assert actual_result == Result(successful, findings=[{
                 "rule": "AdverseEffectRule",
                 "succeeded": successful,
@@ -111,7 +146,7 @@ def test_the_and_rule():
         "is_authorized_representative": False,
         "has_lost_or_inaccessible_income": False,
         "has_inaccessible_liquid_resources": True,
-        "incurred_deductible_disaster_expenses": False,
+        "disaster_expenses": {}
     }
     application = DSNAPApplication(payload)
     assert_result(
@@ -163,55 +198,65 @@ def test_the_and_rule():
     )
 
 
+@pytest.mark.parametrize(
+    "income, allows_food_loss_alone, food_loss, non_food_loss, limit,"
+    "successful, finding_text",
+    [
+        (   # Only food loss, food loss alone allowed
+            530, True, 50, 0, 500,
+            True, "Gross income 480 within limit of 500"
+        ),
+        (   # Only repairs, food loss alone allowed
+            530, True, 0, 50, 500,  # Only repairs, food loss alone allowed
+            True, "Gross income 480 within limit of 500"
+        ),
+        (   # Only food loss, food loss alone not allowed
+            530, False, 50, 0, 500,
+            False, "Gross income 530 exceeds limit of 500"
+        ),
+        (   # Only repairs, food loss alone not allowed
+            530, False, 0, 50, 500,
+            True, "Gross income 480 within limit of 500"
+        ),
+        (   # Food loss + Repairs, food loss alone allowed, both needed to
+            # meet limit
+            530, True, 25, 25, 500,
+            True, "Gross income 480 within limit of 500"
+        ),
+        (   # Food loss + Repairs, food loss alone not allowed, both needed
+            # to meet limit
+            530, False, 25, 25, 500,
+            True, "Gross income 480 within limit of 500"
+        ),
+        (   # Food loss + Repairs, food loss alone allowed, income too high
+            1530, True, 25, 25, 500,
+            False, "Gross income 1480 exceeds limit of 500"
+        ),
+    ])
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
-def test_income_and_resource(get_calculator_mock):
-    LIMIT = 500
+def test_income_and_resource_rule(
+        get_calculator_mock,
+        income, allows_food_loss_alone, food_loss, non_food_loss, limit,
+        successful, finding_text):
     ALLOTMENT = 100
-    get_calculator_mock.return_value.get_limit.return_value = LIMIT
+    get_calculator_mock.return_value.get_limit.return_value = limit
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
 
-    TOTAL_TAKE_HOME_INCOME = 200
-    ACCESSIBLE_LIQUID_RESOURCES = 300
-    FOOD_LOSS = 50
-
-    VERY_LARGE_TAKE_HOME_INCOME = 2 * LIMIT
-
     payload = {
-        "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
-        "accessible_liquid_resources": ACCESSIBLE_LIQUID_RESOURCES,
+        "total_take_home_income": income,
+        "accessible_liquid_resources": 0,
         "disaster_expenses": {
-            "food_loss": FOOD_LOSS,
+            "food_loss": food_loss,
+            "home_or_business_repairs": non_food_loss,
         },
         "size_of_household": 4
     }
     application = DSNAPApplication(payload)
-    gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
-                    - FOOD_LOSS)
-    assert_result(
-        IncomeAndResourceRule(),
-        application,
-        Result(True,
-               findings=[{
-                "rule": "IncomeAndResourceRule",
-                "succeeded": True,
-                "text": f"Gross income {gross_income} within limit of {LIMIT}"
-                }],
-               metrics={"allotment": ALLOTMENT})
-    )
-
-    application.total_take_home_income = VERY_LARGE_TAKE_HOME_INCOME
-    gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
-                    - FOOD_LOSS)
-    assert_result(
-        IncomeAndResourceRule(),
-        application,
-        Result(False,
-               findings=[{
-                "rule": "IncomeAndResourceRule",
-                "succeeded": False,
-                "text": f"Gross income {gross_income} exceeds limit of {LIMIT}"
-                }])
-    )
+    disaster = Disaster(uses_DSED=False,
+                        allows_food_loss_alone=allows_food_loss_alone)
+    result = IncomeAndResourceRule().execute(application, disaster=disaster)
+    assert result.successful is successful
+    assert finding_text == result.findings[0]["text"]
 
 
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
@@ -251,8 +296,8 @@ def test_DSED_calculation(get_calculator_mock):
     )
 
 
-def assert_result(rule, payload, expected_result, disaster=None):
+def assert_result(rule, application, expected_result, disaster=None):
     if disaster is None:
         disaster = Disaster()
-    actual_result = rule.execute(payload, disaster=disaster)
+    actual_result = rule.execute(application, disaster=disaster)
     assert actual_result == expected_result

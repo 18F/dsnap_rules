@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 gevent = "*"
 gunicorn = "*"
-jsonschema = "*"
+jsonschema = "==3.0.0"
 pytest = "*"
 pytest-cov = "*"
 "psycopg2" = "*"

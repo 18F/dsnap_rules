@@ -3,7 +3,6 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from jsonschema.exceptions import ValidationError
 
 from .decorators import json_request
 from .dsnap_application import DSNAPApplication
@@ -29,11 +28,11 @@ def index(request):
     data = request.json
 
     try:
-        validate(data)
-    except ValidationError as ve:
-        response = jsonify(message=ve.message)
-        response.status_code = 400
-        return response
+        valid, messages = validate(data)
+        if not valid:
+            response = jsonify(message=messages)
+            response.status_code = 400
+            return response
     except Exception:
         logger.exception("Failed validation")
 

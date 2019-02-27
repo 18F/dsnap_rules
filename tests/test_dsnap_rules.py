@@ -172,19 +172,21 @@ def test_income_and_resource(get_calculator_mock):
 
     TOTAL_TAKE_HOME_INCOME = 200
     ACCESSIBLE_LIQUID_RESOURCES = 300
-    DEDUCTIBLE_DISASTER_EXPENSES = 50
+    FOOD_LOSS = 50
 
     VERY_LARGE_TAKE_HOME_INCOME = 2 * LIMIT
 
     payload = {
         "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
         "accessible_liquid_resources": ACCESSIBLE_LIQUID_RESOURCES,
-        "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
+        "disaster_expenses": {
+            "food_loss": FOOD_LOSS,
+        },
         "size_of_household": 4
     }
     application = DSNAPApplication(payload)
     gross_income = (TOTAL_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
-                    - DEDUCTIBLE_DISASTER_EXPENSES)
+                    - FOOD_LOSS)
     assert_result(
         IncomeAndResourceRule(),
         application,
@@ -199,7 +201,7 @@ def test_income_and_resource(get_calculator_mock):
 
     application.total_take_home_income = VERY_LARGE_TAKE_HOME_INCOME
     gross_income = (VERY_LARGE_TAKE_HOME_INCOME + ACCESSIBLE_LIQUID_RESOURCES
-                    - DEDUCTIBLE_DISASTER_EXPENSES)
+                    - FOOD_LOSS)
     assert_result(
         IncomeAndResourceRule(),
         application,
@@ -221,12 +223,14 @@ def test_DSED_calculation(get_calculator_mock):
 
     TOTAL_TAKE_HOME_INCOME = 100
     ACCESSIBLE_LIQUID_RESOURCES = 450
-    DEDUCTIBLE_DISASTER_EXPENSES = 50
+    HOME_OR_BUSINESS_REPAIRS = 50
 
     payload = {
         "total_take_home_income": TOTAL_TAKE_HOME_INCOME,
         "accessible_liquid_resources": ACCESSIBLE_LIQUID_RESOURCES,
-        "deductible_disaster_expenses": DEDUCTIBLE_DISASTER_EXPENSES,
+        "disaster_expenses": {
+            "home_or_business_repairs": HOME_OR_BUSINESS_REPAIRS,
+        },
         "size_of_household": 4
     }
     application = DSNAPApplication(payload)

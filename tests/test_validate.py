@@ -10,7 +10,6 @@ def test_good_data():
         "is_head_of_household": True,
         "has_lost_or_inaccessible_income": False,
         "has_inaccessible_liquid_resources": False,
-        "incurred_deductible_disaster_expenses": False,
         "purchased_or_plans_to_purchase_food": True,
         "resided_in_disaster_area_at_disaster_time": True,
         "worked_in_disaster_area_at_disaster_time": False,
@@ -29,7 +28,6 @@ def test_missing_required_field():
     valid, messages = validate({
             "is_head_of_household": True,
             "has_lost_or_inaccessible_income": False,
-            "incurred_deductible_disaster_expenses": False,
     })
     assert valid is False
     assert set(messages) == set([

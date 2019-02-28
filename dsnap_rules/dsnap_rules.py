@@ -34,13 +34,24 @@ class AdverseEffectRule(SimplePredicateRule):
     eligible.
     """
     success_finding = "Experienced disaster-related adverse effects"
-    failure_finding = "Did not experience any disaster-related adverse effect"
+    failure_finding = "Did not experience any disaster-related adverse "\
+        "effect, or they experienced only food loss and this disaster "\
+        "does not allow food loss alone"
 
     def predicate(self, application, disaster):
         return (
             application.has_lost_or_inaccessible_income
             or application.has_inaccessible_liquid_resources
-            or application.incurred_deductible_disaster_expenses)
+            or self.incurred_deductible_disaster_expenses(
+                application, disaster)
+        )
+
+    def incurred_deductible_disaster_expenses(self, application, disaster):
+        if disaster.uses_DSED:
+            return False
+        else:
+            return application.deductible_disaster_expenses(
+                disaster.allows_food_loss_alone) > 0
 
 
 class ResidencyRule(Rule):
@@ -145,8 +156,17 @@ class IncomeAndResourceRule(Rule):
             application.total_take_home_income
             + application.accessible_liquid_resources
             - (0 if disaster.uses_DSED
-                else application.deductible_disaster_expenses())
+               else self.food_loss_adjusted_disaster_expenses(
+                   application, disaster))
         )
+
+    def food_loss_adjusted_disaster_expenses(self, application, disaster):
+        if disaster.allows_food_loss_alone:
+            return application.deductible_disaster_expenses(True)
+        disaster_expenses = application.deductible_disaster_expenses(False)
+        if disaster_expenses > 0:
+            disaster_expenses += application.food_loss()
+        return disaster_expenses
 
     def get_limit_and_allotment(self, application, disaster):
         calculator = income_allotment_calculator.get_calculator(

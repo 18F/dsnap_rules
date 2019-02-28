@@ -24,7 +24,6 @@ GOOD_PAYLOAD = {
     "purchased_or_plans_to_purchase_food": True,
     "resided_in_disaster_area_at_disaster_time": True,
     "worked_in_disaster_area_at_disaster_time": False,
-    "incurred_deductible_disaster_expenses": False,
     "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
     "size_of_household": 4,

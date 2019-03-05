@@ -14,6 +14,7 @@ django = "*"
 dj-database-url = "*"
 pytest-django = "*"
 whitenoise = "*"
+djangorestframework = "*"
 
 [dev-packages]
 ipython = "*"

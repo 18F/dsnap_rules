@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 
-from .decorators import json_request
 from .dsnap_application import DSNAPApplication
 from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                           ConflictingUSDAProgramRule, FoodPurchaseRule,

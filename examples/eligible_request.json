@@ -4,7 +4,6 @@
         "is_authorized_representative": false,
         "has_lost_or_inaccessible_income": false,
         "has_inaccessible_liquid_resources": true,
-        "incurred_deductible_disaster_expenses": false,
         "purchased_or_plans_to_purchase_food": true,
         "resided_in_disaster_area_at_disaster_time": true,
         "worked_in_disaster_area_at_disaster_time": false,
@@ -12,10 +11,9 @@
         "accessible_liquid_resources": 0,
         "disaster_expenses": {
             "food_loss": 12,
-            "shelter_expenses": 15
+            "temporary_shelter_expenses": 15
         },
         "size_of_household": 4,
-        "ize_of_household": 4,
         "receives_FDPIR_benefits": false,
         "receives_TEFAP_food_distribution": false,
         "receives_SNAP_benefits": false

@@ -21,15 +21,15 @@ from .validate import validate
 logger = logging.getLogger(__name__)
 
 
+@api_view(['GET', 'POST'])
 @csrf_exempt
-@json_request
 def index(request):
     if request.method == 'GET':
         disasters = Disaster.objects.order_by('disaster_request_no')
         context = {"disaster_list": disasters}
         return render(request, 'dsnap_rules/demo_form.html', context)
 
-    data = request.json
+    data = request.data
 
     try:
         valid, messages = validate(data)

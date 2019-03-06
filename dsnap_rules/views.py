@@ -3,9 +3,8 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
-
+from rest_framework.response import Response
 
 from .dsnap_application import DSNAPApplication
 from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,

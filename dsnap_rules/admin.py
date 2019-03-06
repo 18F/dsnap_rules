@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-from .models import (
-    ApplicationPeriod,
-    Disaster,
-)
+from .models import ApplicationPeriod, Disaster
 
 
 class ApplicationPeriodInline(admin.TabularInline):

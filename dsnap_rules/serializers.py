@@ -13,7 +13,9 @@ class ApplicationPeriodSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplicationPeriod
-        fields = ('begin_date', 'end_date', 'counties')
+        fields = ('begin_date', 'end_date',
+                  'registration_begin_date', 'registration_end_date',
+                  'counties')
 
 
 class DisasterSerializer(serializers.ModelSerializer):

@@ -202,33 +202,34 @@ def test_the_and_rule():
     "income, allows_food_loss_alone, food_loss, non_food_loss, limit,"
     "successful, finding_text",
     [
-        (   # Only food loss, food loss alone allowed
+        (   # Only food loss; food loss alone allowed
             530, True, 50, 0, 500,
             True, "Gross income 480 within limit of 500"
         ),
-        (   # Only repairs, food loss alone allowed
-            530, True, 0, 50, 500,  # Only repairs, food loss alone allowed
+        (   # Only non-food losses; food loss alone allowed
+            530, True, 0, 50, 500,
             True, "Gross income 480 within limit of 500"
         ),
-        (   # Only food loss, food loss alone not allowed
+        (   # Only food loss; food loss alone not allowed
             530, False, 50, 0, 500,
             False, "Gross income 530 exceeds limit of 500"
         ),
-        (   # Only repairs, food loss alone not allowed
+        (   # Only non-food losses; food loss alone not allowed
             530, False, 0, 50, 500,
             True, "Gross income 480 within limit of 500"
         ),
-        (   # Food loss + Repairs, food loss alone allowed, both needed to
-            # meet limit
+        (   # Food loss + non-food losses; food loss alone allowed, both needed
+            # to meet limit
             530, True, 25, 25, 500,
             True, "Gross income 480 within limit of 500"
         ),
-        (   # Food loss + Repairs, food loss alone not allowed, both needed
-            # to meet limit
+        (   # Food loss + non-food losses; food loss alone not allowed, both
+            # needed to meet limit
             530, False, 25, 25, 500,
             True, "Gross income 480 within limit of 500"
         ),
-        (   # Food loss + Repairs, food loss alone allowed, income too high
+        (   # Food loss + non-food losses; food loss alone allowed, income too
+            # high
             1530, True, 25, 25, 500,
             False, "Gross income 1480 exceeds limit of 500"
         ),

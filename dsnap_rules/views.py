@@ -2,6 +2,7 @@ import logging
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -74,7 +75,14 @@ def index(request):
 @api_view(['GET'])
 @csrf_exempt
 def disaster_list(request):
-    disasters = Disaster.objects.all()
+    """
+    Returns active disasters, i.e., disasters that have one or more application
+    periods which have registration periods that span the current date
+    """
+    today = timezone.localdate()
+    disasters = Disaster.objects.filter(
+        application_periods__registration_begin_date__lte=today).filter(
+        application_periods__registration_end_date__gte=today).distinct()
     serializer = DisasterSerializer(disasters, many=True)
     return Response(serializer.data)
 

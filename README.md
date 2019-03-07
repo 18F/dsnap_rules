@@ -71,3 +71,11 @@ python manage.py runserver
 ```
 
 This will make the application available at `http://localhost:8000`, by default. To change the port and other settings, see https://docs.djangoproject.com/en/2.1/ref/django-admin/#runserver.
+
+## Endpoints
+
+| URL         | Verb   | Description
+|-------------|--------|--------------------|
+| /           | POST   | The main rules service endpoint for submitting requests and executing the rules |
+| /           | GET    | Quick and dirty form for demo purposes |
+| /disasters  | GET    | Returns the active disasters, i.e., those with registration periods that span today's date |

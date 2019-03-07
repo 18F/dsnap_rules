@@ -15,7 +15,11 @@ dj-database-url = "*"
 pytest-django = "*"
 whitenoise = "*"
 djangorestframework = "*"
+<<<<<<< HEAD
 factory-boy = "*"
+=======
+django-cors-headers = "*"
+>>>>>>> Adds cross-origin resource support
 
 [dev-packages]
 ipython = "*"

@@ -64,6 +64,11 @@ Migrate the database, if necessary, using:
 ```
 python manage.py migrate
 ```
+Load fixture data for disasters, using:
+```
+python manage.py loaddata dsnap_rules/fixtures/disaster.json
+```
+Alternatively, data can be loaded using the Django admin app, described below.
 
 Start the app using:
 ```
@@ -72,10 +77,18 @@ python manage.py runserver
 
 This will make the application available at `http://localhost:8000`, by default. To change the port and other settings, see https://docs.djangoproject.com/en/2.1/ref/django-admin/#runserver.
 
+## Admin app
+To use the admin app, create admin users using:
+```
+python manage.py createsuperuser
+```
+Access the admin app at {deployment_url}/admin and authenticate using the admin userid and password created.
+
 ## Endpoints
 
-| URL         | Verb   | Description
-|-------------|--------|--------------------|
-| /           | POST   | The main rules service endpoint for submitting requests and executing the rules |
-| /           | GET    | Quick and dirty form for demo purposes |
-| /disasters  | GET    | Returns the active disasters, i.e., those with registration periods that span today's date |
+| URL         | Verb     | Description
+|-------------|----------|--------------------|
+| /           | POST     | The main rules service endpoint for submitting requests and executing the rules |
+| /           | GET      | Quick and dirty form for demo purposes |
+| /disasters  | GET      | Returns the active disasters, i.e., those with registration periods that span today's date |
+| /admin      | GET/POST | Django Admin interface for CRUD operations on disasters |

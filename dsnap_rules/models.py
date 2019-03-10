@@ -48,6 +48,8 @@ class ApplicationPeriod(models.Model):
                                  related_name='application_periods')
     begin_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
+    registration_begin_date = models.DateField(null=False)
+    registration_end_date = models.DateField(null=False)
     counties = models.ManyToManyField(County)
 
     def __str__(self):

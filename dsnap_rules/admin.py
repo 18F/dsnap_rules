@@ -1,14 +1,17 @@
 from django.contrib import admin
 
+from .forms import ApplicationPeriodForm, DisasterForm
 from .models import ApplicationPeriod, Disaster
 
 
 class ApplicationPeriodInline(admin.TabularInline):
+    form = ApplicationPeriodForm
     model = ApplicationPeriod
     extra = 1
 
 
 class DisasterAdmin(admin.ModelAdmin):
+    form = DisasterForm
     inlines = [ApplicationPeriodInline]
     list_display = ('disaster_request_no', 'title', 'state',
                     'benefit_begin_date', 'benefit_end_date')

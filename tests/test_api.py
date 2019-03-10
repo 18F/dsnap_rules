@@ -10,7 +10,6 @@ from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                                      ConflictingUSDAProgramRule,
                                      FoodPurchaseRule, ResidencyRule,
                                      SNAPSupplementalBenefitsRule)
-from dsnap_rules.models import ApplicationPeriod, Disaster, State
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
@@ -77,12 +76,8 @@ def test_valid_disaster(get_calculator_mock, client):
     get_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
-    Disaster.objects.create(
+    disaster = factories.DisasterFactory(
         disaster_request_no=payload["disaster_request_no"],
-        title="Disaster in FL",
-        benefit_begin_date="2018-10-01",
-        benefit_end_date="2018-10-31",
-        state=State.objects.get(abbreviation="FL"),
         residency_required=True,
         uses_DSED=False,
         allows_food_loss_alone=True,
@@ -90,7 +85,6 @@ def test_valid_disaster(get_calculator_mock, client):
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json()["state"] == "FL"
     assert response.json() == {
         "eligible": True,
         "findings": [
@@ -132,7 +126,7 @@ def test_valid_disaster(get_calculator_mock, client):
             },
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state": "FL"
+        "state": disaster.state.abbreviation
     }
 
 
@@ -145,12 +139,8 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
-    Disaster.objects.create(
+    disaster = factories.DisasterFactory(
         disaster_request_no=payload["disaster_request_no"],
-        title="Disaster in FL",
-        benefit_begin_date="2018-10-01",
-        benefit_end_date="2018-10-31",
-        state=State.objects.get(abbreviation="FL"),
         residency_required=True,
         uses_DSED=False,
         allows_food_loss_alone=True,
@@ -158,7 +148,6 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json()["state"] == "FL"
     assert response.json() == {
         "eligible": False,
         "findings": [
@@ -200,7 +189,7 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
             },
         ],
         "metrics": {"allotment": ALLOTMENT},
-        "state": "FL"
+        "state": disaster.state.abbreviation
     }
 
 
@@ -208,66 +197,83 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
 def test_get_disasters_with_single_application_periods(client):
     today = timezone.localdate()
 
-    disaster_with_active_period = factories.DisasterFactory()
-    active_application_period = factories.ApplicationPeriodFactory(
+    active_period = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today - timedelta(days=1),
         registration_end_date=today + timedelta(days=5),
-        disaster=disaster_with_active_period
+    )
+    disaster_with_active_period = factories.DisasterFactory()
+    disaster_with_active_period.application_periods.add(
+        active_period,
+        bulk=False
     )
 
-    disaster_with_past_active_period = factories.DisasterFactory()
-    past_application_period = factories.ApplicationPeriodFactory(
+    past_period = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today - timedelta(days=10),
         registration_end_date=today - timedelta(days=5),
-        disaster=disaster_with_past_active_period
+    )
+    disaster_with_past_active_period = factories.DisasterFactory()
+    disaster_with_past_active_period.application_periods.add(
+        past_period,
+        bulk=False
     )
 
-    disaster_with_future_active_period = factories.DisasterFactory()
-    future_application_period = factories.ApplicationPeriodFactory(
+    future_period = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today + timedelta(days=5),
         registration_end_date=today + timedelta(days=10),
-        disaster=disaster_with_future_active_period
+    )
+    disaster_with_future_active_period = factories.DisasterFactory()
+    disaster_with_future_active_period.application_periods.add(
+        future_period,
+        bulk=False
     )
 
     response = client.get('/disasters')
 
     assert response.status_code == 200
-    assert disaster_with_active_period.title in [d['title'] for d in response.json()]
-    assert disaster_with_past_active_period.title not in [d['title'] for d in response.json()]
-    assert disaster_with_future_active_period.title not in [d['title'] for d in response.json()]
+    returned_titles = [d['title'] for d in response.json()]
+    assert disaster_with_active_period.title in returned_titles
+    assert disaster_with_past_active_period.title not in returned_titles
+    assert disaster_with_future_active_period.title not in returned_titles
 
 
 @pytest.mark.django_db
 def test_get_disasters_with_multiple_application_periods(client):
     today = timezone.localdate()
 
-    disaster_with_2_active_periods = factories.DisasterFactory()
-    active_application_period1 = factories.ApplicationPeriodFactory(
+    active_period1 = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today - timedelta(days=5),
         registration_end_date=today + timedelta(days=1),
-        disaster=disaster_with_2_active_periods
     )
-    active_application_period2 = factories.ApplicationPeriodFactory(
+    active_period2 = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today - timedelta(days=1),
         registration_end_date=today + timedelta(days=5),
-        disaster=disaster_with_2_active_periods
+    )
+    disaster_with_2_active_periods = factories.DisasterFactory()
+    disaster_with_2_active_periods.application_periods.add(
+        active_period1,
+        active_period2,
+        bulk=False
     )
 
-    disaster_with_1_active_1_future_period = factories.DisasterFactory()
-    active_application_period = factories.ApplicationPeriodFactory(
+    active_period = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today - timedelta(days=5),
         registration_end_date=today + timedelta(days=5),
-        disaster=disaster_with_1_active_1_future_period
     )
-    future_application_period = factories.ApplicationPeriodFactory(
+    future_period = factories.ApplicationPeriodFactory.build(
         registration_begin_date=today + timedelta(days=5),
         registration_end_date=today + timedelta(days=10),
-        disaster=disaster_with_1_active_1_future_period
+    )
+    disaster_with_1_active_1_future_period = factories.DisasterFactory()
+    disaster_with_1_active_1_future_period.application_periods.add(
+        active_period,
+        future_period,
+        bulk=False
     )
 
     response = client.get('/disasters')
 
     assert response.status_code == 200
     assert len(response.json()) == 2
-    assert disaster_with_2_active_periods.title in [d['title'] for d in response.json()]
-    assert disaster_with_1_active_1_future_period.title in [d['title'] for d in response.json()]
+    returned_titles = [d['title'] for d in response.json()]
+    assert disaster_with_2_active_periods.title in returned_titles
+    assert disaster_with_1_active_1_future_period.title in returned_titles

@@ -30,6 +30,8 @@ SCHEMA = {
                     "type": "number", "minimum": 0},
                 "fuel_for_primary_heating_source": {
                     "type": "number", "minimum": 0},
+                "clean_up_items_expenses": {
+                    "type": "number", "minimum": 0},
                 "disaster_damaged_vehicle_expenses": {
                     "type": "number", "minimum": 0},
                 "storage_expenses": {

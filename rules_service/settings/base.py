@@ -29,9 +29,12 @@ ALLOWED_HOSTS = [
     '.app.cloud.gov',
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    'localhost',
+    '127.0.0.1'
+]
+
 CORS_ORIGIN_REGEX_WHITELIST = (
-    'localhost:(\d{4})'
-    r'^127\.0\.0\.1:3000',
     r'^https?://dsnap-registration.*\.app\.cloud\.gov$'
 )
 

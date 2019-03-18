@@ -16,6 +16,7 @@ pytest-django = "*"
 whitenoise = "*"
 djangorestframework = "*"
 factory-boy = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 ipython = "*"

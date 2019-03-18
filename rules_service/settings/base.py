@@ -29,6 +29,14 @@ ALLOWED_HOSTS = [
     '.app.cloud.gov',
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    'localhost',
+    '127.0.0.1'
+]
+
+CORS_ORIGIN_REGEX_WHITELIST = (
+    r'^https?://dsnap-registration.*\.app\.cloud\.gov$'
+)
 
 # Application definition
 
@@ -40,13 +48,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

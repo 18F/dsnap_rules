@@ -7,7 +7,6 @@ from django.utils import timezone
 
 from . import factories
 from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
-                                     ConflictingUSDAProgramRule,
                                      FoodPurchaseRule, ResidencyRule,
                                      SNAPSupplementalBenefitsRule)
 
@@ -26,8 +25,6 @@ GOOD_PAYLOAD = {
     "total_take_home_income": 200,
     "accessible_liquid_resources": 0,
     "size_of_household": 4,
-    "receives_FDPIR_benefits": False,
-    "receives_TEFAP_food_distribution": False,
     "receives_SNAP_benefits": False,
 }
 
@@ -109,11 +106,6 @@ def test_valid_disaster(get_calculator_mock, client):
                 "text": ResidencyRule.resided_finding
             },
             {
-                "rule": "ConflictingUSDAProgramRule",
-                "succeeded": True,
-                "text": ConflictingUSDAProgramRule.success_finding
-            },
-            {
                 "rule": "SNAPSupplementalBenefitsRule",
                 "succeeded": True,
                 "text": SNAPSupplementalBenefitsRule.success_finding
@@ -170,11 +162,6 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
                 "rule": "ResidencyRule",
                 "succeeded": True,
                 "text": ResidencyRule.resided_finding
-            },
-            {
-                "rule": "ConflictingUSDAProgramRule",
-                "succeeded": True,
-                "text": ConflictingUSDAProgramRule.success_finding
             },
             {
                 "rule": "SNAPSupplementalBenefitsRule",

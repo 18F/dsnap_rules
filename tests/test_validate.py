@@ -16,8 +16,6 @@ def test_good_data():
         "size_of_household": 2,
         "total_take_home_income": 10,
         "accessible_liquid_resources": 0,
-        "receives_FDPIR_benefits": True,
-        "receives_TEFAP_food_distribution": False,
         "receives_SNAP_benefits": False,
     })
     assert valid is True
@@ -40,7 +38,5 @@ def test_missing_required_field():
         "'size_of_household' is a required property",
         "'total_take_home_income' is a required property",
         "'worked_in_disaster_area_at_disaster_time' is a required property",
-        "'receives_FDPIR_benefits' is a required property",
-        "'receives_TEFAP_food_distribution' is a required property",
         "'receives_SNAP_benefits' is a required property"
     ])

@@ -33,7 +33,7 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: Install Dependencies
           command: |
             pipenv install
 
@@ -51,7 +51,7 @@ jobs:
           key: v1-dependencies-{{ checksum "Pipfile.lock" }}
 
       - run:
-          name: run tests
+          name: Run Tests
           command: |
             pipenv run pytest
 

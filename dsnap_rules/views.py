@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .dsnap_application import DSNAPApplication
 from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
-                          ConflictingUSDAProgramRule, FoodPurchaseRule,
+                          FoodPurchaseRule,
                           IncomeAndResourceRule, ResidencyRule,
                           SNAPSupplementalBenefitsRule)
 from .models import Disaster
@@ -57,7 +57,6 @@ def index(request):
             AdverseEffectRule(),
             FoodPurchaseRule(),
             ResidencyRule(),
-            ConflictingUSDAProgramRule(),
             SNAPSupplementalBenefitsRule(),
             IncomeAndResourceRule()
         ).execute(application, disaster)

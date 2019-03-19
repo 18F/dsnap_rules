@@ -18,23 +18,7 @@ SCHEMA = {
                     "type": "number", "minimum": 0},
                 "evacuation_expenses": {
                     "type": "number", "minimum": 0},
-                "home_or_business_property_protection": {
-                    "type": "number", "minimum": 0},
-                "personal_injury_medical": {
-                    "type": "number", "minimum": 0},
-                "disaster_related_funeral_expenses": {
-                    "type": "number", "minimum": 0},
-                "disaster_related_pet_boarding_fees": {
-                    "type": "number", "minimum": 0},
-                "expenses_related_to_replacing_items": {
-                    "type": "number", "minimum": 0},
-                "fuel_for_primary_heating_source": {
-                    "type": "number", "minimum": 0},
-                "clean_up_items_expenses": {
-                    "type": "number", "minimum": 0},
-                "disaster_damaged_vehicle_expenses": {
-                    "type": "number", "minimum": 0},
-                "storage_expenses": {
+                "other": {
                     "type": "number", "minimum": 0},
             },
             "additionalProperties": False

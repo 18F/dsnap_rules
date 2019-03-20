@@ -16,6 +16,7 @@ class Disaster(models.Model):
         db_table = "disaster"
     disaster_request_no = models.CharField(max_length=20)
     title = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
     benefit_begin_date = models.DateField(null=False)
     benefit_end_date = models.DateField(null=False)
     state = models.ForeignKey(State, db_column="state",

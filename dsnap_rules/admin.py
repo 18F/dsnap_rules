@@ -17,6 +17,7 @@ class DisasterAdmin(admin.ModelAdmin):
                     'benefit_begin_date', 'benefit_end_date')
     fields = (
         ('disaster_request_no', 'title'),
+        'description',
         'state',
         ('benefit_begin_date', 'benefit_end_date'),
         ('residency_required', 'uses_DSED', 'allows_food_loss_alone'),

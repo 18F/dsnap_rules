@@ -54,7 +54,7 @@ class AdverseEffectRule(SimplePredicateRule):
                 disaster.allows_food_loss_alone) > 0
 
 
-class ResidencyRule(Rule):
+class DisasterAreaResidencyRule(Rule):
     """
     In most cases, the household must have lived in the disaster area at the
     time of the disaster. States may also choose to extend eligibility to those

@@ -6,9 +6,13 @@ import pytest
 from django.utils import timezone
 
 from . import factories
-from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
-                                     FoodPurchaseRule, ResidencyRule,
-                                     SNAPSupplementalBenefitsRule)
+from dsnap_rules.dsnap_rules import (
+    AdverseEffectRule,
+    AuthorizedRule,
+    DisasterAreaResidencyRule,
+    FoodPurchaseRule,
+    SNAPSupplementalBenefitsRule,
+)
 
 GOOD_PAYLOAD = {
     "disaster_request_no": "DR-1",
@@ -101,9 +105,9 @@ def test_valid_disaster(get_calculator_mock, client):
                 "text": FoodPurchaseRule.success_finding
             },
             {
-                "rule": "ResidencyRule",
+                "rule": "DisasterAreaResidencyRule",
                 "succeeded": True,
-                "text": ResidencyRule.resided_finding
+                "text": DisasterAreaResidencyRule.resided_finding
             },
             {
                 "rule": "SNAPSupplementalBenefitsRule",
@@ -159,9 +163,9 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
                 "text": FoodPurchaseRule.success_finding
             },
             {
-                "rule": "ResidencyRule",
+                "rule": "DisasterAreaResidencyRule",
                 "succeeded": True,
-                "text": ResidencyRule.resided_finding
+                "text": DisasterAreaResidencyRule.resided_finding
             },
             {
                 "rule": "SNAPSupplementalBenefitsRule",

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .dsnap_application import DSNAPApplication
 from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
                           FoodPurchaseRule,
-                          IncomeAndResourceRule, ResidencyRule,
+                          IncomeAndResourceRule, DisasterAreaResidencyRule,
                           SNAPSupplementalBenefitsRule)
 from .models import Disaster
 from .rules import And
@@ -56,7 +56,7 @@ def index(request):
             AuthorizedRule(),
             AdverseEffectRule(),
             FoodPurchaseRule(),
-            ResidencyRule(),
+            DisasterAreaResidencyRule(),
             SNAPSupplementalBenefitsRule(),
             IncomeAndResourceRule()
         ).execute(application, disaster)

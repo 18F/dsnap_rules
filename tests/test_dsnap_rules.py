@@ -3,8 +3,12 @@ from unittest.mock import patch
 import pytest
 
 from dsnap_rules.dsnap_application import DSNAPApplication
-from dsnap_rules.dsnap_rules import (AdverseEffectRule, AuthorizedRule,
-                                     IncomeAndResourceRule, ResidencyRule)
+from dsnap_rules.dsnap_rules import (
+    AdverseEffectRule,
+    AuthorizedRule,
+    DisasterAreaResidencyRule,
+    IncomeAndResourceRule,
+)
 from dsnap_rules.models import Disaster
 from dsnap_rules.rules import And, Result
 
@@ -108,14 +112,18 @@ def test_adverse_effect_rule_with_food_loss_alone_setting(
     "residency_required,"
     "successful, finding",
     [
-        (True, True, False, True, ResidencyRule.resided_finding),
-        (True, True, True, True, ResidencyRule.resided_finding),
-        (True, False, False, True, ResidencyRule.resided_finding),
-        (True, False, True, True, ResidencyRule.resided_finding),
-        (False, True, False, True, ResidencyRule.worked_eligible_finding),
-        (False, True, True, False, ResidencyRule.worked_ineligible_finding),
-        (False, False, False, False, ResidencyRule.failure_finding),
-        (False, False, True, False, ResidencyRule.failure_finding),
+        (True, True, False, True, DisasterAreaResidencyRule.resided_finding),
+        (True, True, True, True, DisasterAreaResidencyRule.resided_finding),
+        (True, False, False, True, DisasterAreaResidencyRule.resided_finding),
+        (True, False, True, True, DisasterAreaResidencyRule.resided_finding),
+        (False, True, False, True,
+            DisasterAreaResidencyRule.worked_eligible_finding),
+        (False, True, True, False,
+            DisasterAreaResidencyRule.worked_ineligible_finding),
+        (False, False, False, False,
+            DisasterAreaResidencyRule.failure_finding),
+        (False, False, True, False,
+            DisasterAreaResidencyRule.failure_finding),
     ])
 def test_residency_rule(
         resided_in_disaster_area_at_disaster_time,
@@ -132,9 +140,10 @@ def test_residency_rule(
     application = DSNAPApplication(payload)
     disaster = Disaster(residency_required=residency_required)
 
-    actual_result = ResidencyRule().execute(application, disaster=disaster)
+    actual_result = DisasterAreaResidencyRule().execute(
+        application, disaster=disaster)
     assert actual_result == Result(successful, findings=[{
-                "rule": "ResidencyRule",
+                "rule": "DisasterAreaResidencyRule",
                 "succeeded": successful,
                 "text": finding
             }])

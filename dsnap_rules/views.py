@@ -8,10 +8,15 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .dsnap_application import DSNAPApplication
-from .dsnap_rules import (AdverseEffectRule, AuthorizedRule,
-                          FoodPurchaseRule,
-                          IncomeAndResourceRule, DisasterAreaResidencyRule,
-                          SNAPSupplementalBenefitsRule)
+from .dsnap_rules import (
+    AdverseEffectRule,
+    AuthorizedRule,
+    DisasterAreaResidencyRule,
+    FoodPurchaseRule,
+    IncomeAndResourceRule,
+    StateResidencyRule,
+    SNAPSupplementalBenefitsRule,
+)
 from .models import Disaster
 from .rules import And
 from .serializers import DisasterSerializer
@@ -55,6 +60,7 @@ def index(request):
             AdverseEffectRule(),
             FoodPurchaseRule(),
             DisasterAreaResidencyRule(),
+            StateResidencyRule(),
             SNAPSupplementalBenefitsRule(),
             IncomeAndResourceRule()
         ).execute(application, disaster)

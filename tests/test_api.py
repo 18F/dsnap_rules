@@ -11,6 +11,7 @@ from dsnap_rules.dsnap_rules import (
     AuthorizedRule,
     DisasterAreaResidencyRule,
     FoodPurchaseRule,
+    StateResidencyRule,
     SNAPSupplementalBenefitsRule,
 )
 
@@ -30,6 +31,7 @@ GOOD_PAYLOAD = {
     "accessible_liquid_resources": 0,
     "size_of_household": 4,
     "receives_SNAP_benefits": False,
+    "residence_state": "FL",
 }
 
 
@@ -83,6 +85,7 @@ def test_valid_disaster(get_calculator_mock, client):
     )
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["disaster_id"] = disaster.id
+    payload["residence_state"] = disaster.state.abbreviation
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
@@ -108,6 +111,11 @@ def test_valid_disaster(get_calculator_mock, client):
                 "rule": "DisasterAreaResidencyRule",
                 "succeeded": True,
                 "text": DisasterAreaResidencyRule.resided_finding
+            },
+            {
+                "rule": "StateResidencyRule",
+                "succeeded": True,
+                "text": StateResidencyRule.success_finding
             },
             {
                 "rule": "SNAPSupplementalBenefitsRule",
@@ -141,6 +149,7 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     payload = copy.deepcopy(GOOD_PAYLOAD)
     payload["is_head_of_household"] = False
     payload["disaster_id"] = disaster.id
+    payload["residence_state"] = disaster.state.abbreviation
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
@@ -166,6 +175,11 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
                 "rule": "DisasterAreaResidencyRule",
                 "succeeded": True,
                 "text": DisasterAreaResidencyRule.resided_finding
+            },
+            {
+                "rule": "StateResidencyRule",
+                "succeeded": True,
+                "text": StateResidencyRule.success_finding
             },
             {
                 "rule": "SNAPSupplementalBenefitsRule",

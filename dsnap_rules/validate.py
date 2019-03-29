@@ -34,6 +34,7 @@ SCHEMA = {
         "total_take_home_income": {"type": "number", "minimum": 0},
         "worked_in_disaster_area_at_disaster_time": {"type": "boolean"},
         "receives_SNAP_benefits": {"type": "boolean"},
+        "residence_state": {"type": "string"},
     },
     "required": [
         "accessible_liquid_resources",
@@ -45,6 +46,7 @@ SCHEMA = {
         "purchased_or_plans_to_purchase_food",
         "receives_SNAP_benefits",
         "resided_in_disaster_area_at_disaster_time",
+        "residence_state",
         "size_of_household",
         "total_take_home_income",
         "worked_in_disaster_area_at_disaster_time",

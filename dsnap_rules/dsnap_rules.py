@@ -89,6 +89,19 @@ class DisasterAreaResidencyRule(Rule):
         return Result(result, self.assemble_findings(result, finding))
 
 
+class StateResidencyRule(SimplePredicateRule):
+    """
+    States can only provide benefits to their residents. This is not
+    explicitly stated in the D-SNAP handbook, but is nevertheless a
+    requirement.
+    """
+    success_finding = "Is a state resident"
+    failure_finding = "Is not a state resident"
+
+    def predicate(self, application, disaster):
+        return (application.residence_state == disaster.state.abbreviation)
+
+
 class SNAPSupplementalBenefitsRule(SimplePredicateRule):
     """
     Supplemental benefits provide parity between new D-SNAP households

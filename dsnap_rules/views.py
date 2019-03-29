@@ -28,10 +28,8 @@ def index(request):
         context = {"disaster_list": disasters}
         return render(request, 'dsnap_rules/demo_form.html', context)
 
-    data = request.data
-
     try:
-        valid, messages = validate(data)
+        valid, messages = validate(request.data)
         if not valid:
             response = jsonify(message=messages)
             response.status_code = 400
@@ -41,17 +39,17 @@ def index(request):
 
     try:
         disaster = Disaster.objects.get(
-            disaster_request_no=data["disaster_request_no"])
+            pk=request.data["disaster_id"])
     except Disaster.DoesNotExist:
         response = jsonify(message="Disaster {} not found".format(
-            data["disaster_request_no"]))
+            request.data["disaster_id"]))
         response.status_code = 404
         return response
     except Exception:
         logger.exception("Failed to retrieve a disaster")
 
     try:
-        application = DSNAPApplication(data)
+        application = DSNAPApplication(request.data)
         result = And(
             AuthorizedRule(),
             AdverseEffectRule(),

@@ -15,7 +15,7 @@ from dsnap_rules.dsnap_rules import (
 )
 
 GOOD_PAYLOAD = {
-    "disaster_request_no": "DR-1",
+    "disaster_id": 42,
     "disaster_expenses": {
         "food_loss": 0,
     },
@@ -65,7 +65,7 @@ def test_invalid_disaster(client):
     assert response.status_code == 404
     assert response.json() == {
         "message": "Disaster {} not found".format(
-            payload["disaster_request_no"])
+            payload["disaster_id"])
     }
 
 
@@ -76,13 +76,13 @@ def test_valid_disaster(get_calculator_mock, client):
     ALLOTMENT = 100
     get_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
-    payload = copy.deepcopy(GOOD_PAYLOAD)
     disaster = factories.DisasterFactory(
-        disaster_request_no=payload["disaster_request_no"],
         residency_required=True,
         uses_DSED=False,
         allows_food_loss_alone=True,
     )
+    payload = copy.deepcopy(GOOD_PAYLOAD)
+    payload["disaster_id"] = disaster.id
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200
@@ -133,14 +133,14 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
     ALLOTMENT = 100
     get_calculator_mock.return_value.get_limit.return_value = LIMIT
     get_calculator_mock.return_value.get_allotment.return_value = ALLOTMENT
-    payload = copy.deepcopy(GOOD_PAYLOAD)
-    payload["is_head_of_household"] = False
     disaster = factories.DisasterFactory(
-        disaster_request_no=payload["disaster_request_no"],
         residency_required=True,
         uses_DSED=False,
         allows_food_loss_alone=True,
     )
+    payload = copy.deepcopy(GOOD_PAYLOAD)
+    payload["is_head_of_household"] = False
+    payload["disaster_id"] = disaster.id
     response = client.post('/', data=payload, content_type="application/json")
 
     assert response.status_code == 200

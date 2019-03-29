@@ -3,7 +3,7 @@ from dsnap_rules.validate import validate
 
 def test_good_data():
     valid, messages = validate({
-        "disaster_request_no": "DR-1",
+        "disaster_id": 42,
         "disaster_expenses": {
             "food_loss": 0
         },
@@ -30,7 +30,7 @@ def test_missing_required_field():
     assert valid is False
     assert set(messages) == set([
         "'accessible_liquid_resources' is a required property",
-        "'disaster_request_no' is a required property",
+        "'disaster_id' is a required property",
         "'disaster_expenses' is a required property",
         "'has_inaccessible_liquid_resources' is a required property",
         "'purchased_or_plans_to_purchase_food' is a required property",

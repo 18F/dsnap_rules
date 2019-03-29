@@ -23,7 +23,7 @@ SCHEMA = {
             },
             "additionalProperties": False
         },
-        "disaster_request_no": {"type": "string"},
+        "disaster_id": {"type": "integer"},
         "has_inaccessible_liquid_resources": {"type": "boolean"},
         "has_lost_or_inaccessible_income": {"type": "boolean"},
         "is_authorized_representative": {"type": "boolean"},
@@ -37,7 +37,7 @@ SCHEMA = {
     },
     "required": [
         "accessible_liquid_resources",
-        "disaster_request_no",
+        "disaster_id",
         "disaster_expenses",
         "has_inaccessible_liquid_resources",
         "has_lost_or_inaccessible_income",

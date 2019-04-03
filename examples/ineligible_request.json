@@ -1,5 +1,5 @@
     {
-        "disaster_request_no": "DR-4344",
+        "disaster_id": 13,
         "is_head_of_household": false,
         "is_authorized_representative": false,
         "has_lost_or_inaccessible_income": false,
@@ -14,5 +14,6 @@
             "temporary_shelter_expenses": 15
         },
         "size_of_household": 4,
-        "receives_SNAP_benefits": false
+        "receives_SNAP_benefits": false,
+        "residence_state": "FL"
     }

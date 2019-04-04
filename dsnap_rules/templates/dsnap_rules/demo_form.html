@@ -15,11 +15,11 @@
     <div class="row">
         <div>
             <form method=POST class="main-form">
-                <label for="disaster_request_no">Disaster:</label>
-                <select list="disaster_list" id="disaster_request_no" name="disaster_request_no" />
+                <label for="disaster_id">Disaster:</label>
+                <select list="disaster_list" id="disaster_id" name="disaster_id" />
                     <option value="">--Please choose an option--</option>
                     {% for disaster in disaster_list %}
-                    <option value="{{ disaster.disaster_request_no }}">{{ disaster }}</option>
+                    <option value="{{ disaster.id }}">{{ disaster }}</option>
                     {% endfor %}
                 </select>
                 <br/>
@@ -46,10 +46,6 @@
                     <label for="has_inaccessible_liquid_resources"> Has inaccessible liquid resources?</label>
                     <input type=checkbox id="has_inaccessible_liquid_resources" name="has_inaccessible_liquid_resources"/>
                     <br/>
-
-                    <label for="incurred_deductible_disaster_expenses"> Incurred deductible disaster expenses?</label>
-                    <input type=checkbox id="incurred_deductible_disaster_expenses" name="incurred_deductible_disaster_expenses"/>
-                    <br/>
                 </fieldset>
 
                 <fieldset>
@@ -62,6 +58,9 @@
 
                 <fieldset>
                     <legend> Residency </legend>
+                    <label for="residence_state"> Residence state </label>
+                    <input id="residence_state" minlength=2 maxlength=2 name="residence_state" />
+                    <br/>
 
                     <label for="resided_in_disaster_area_at_disaster_time"> Resided in disaster area at disaster time?</label>
                     <input type=checkbox id="resided_in_disaster_area_at_disaster_time" name="resided_in_disaster_area_at_disaster_time"/>
@@ -82,7 +81,11 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend> Income &amp; Expenses </legend>
+                    <legend> Household &amp; Income </legend>
+
+                    <label for="size_of_household"> Size of household</label>
+                    <input type=number id="size_of_household" min=1  name="size_of_household" />
+                    <br/>
 
                     <label for="total_take_home_income"> Total take home income</label>
                     <input type=number id="total_take_home_income" min=0 step=0.01 name="total_take_home_income" />
@@ -92,13 +95,29 @@
                     <input type=number id="accessible_liquid_resources" min=0 step=0.01 name="accessible_liquid_resources" />
                     <br/>
 
-                    <label for="deductible_disaster_expenses"> Deductible disaster expenses</label>
-                    <input type=number id="deductible_disaster_expenses" min=0 step=0.01  name="deductible_disaster_expenses" />
-                    <br/>
+                </fieldset>
 
-                    <label for="size_of_household"> Size of household</label>
-                    <input type=number id="size_of_household" min=1  name="size_of_household" />
-                    <br/>
+                <fieldset>
+                    <legend> Disaster Expenses </legend>
+                        <label for="food_loss"> Food Loss </label>
+                        <input type=number id="food_loss" min=0 step=0.01  name="food_loss" />
+                        <br/>
+
+                        <label for="home_or_business_repairs"> Home or Business Repairs </label>
+                        <input type=number id="home_or_business_repairs" min=0 step=0.01  name="home_or_business_repairs" />
+                        <br/>
+
+                        <label for="temporary_shelter_expenses"> Temporary Shelter Expenses </label>
+                        <input type=number id="temporary_shelter_expenses" min=0 step=0.01  name="temporary_shelter_expenses" />
+                        <br/>
+
+                        <label for="evacuation_expenses"> Evacuation Expenses </label>
+                        <input type=number id="evacuation_expenses" min=0 step=0.01  name="evacuation_expenses" />
+                        <br/>
+
+                        <label for="other"> Other </label>
+                        <input type=number id="other" min=0 step=0.01  name="other" />
+                        <br/>
 
                 </fieldset>
 
@@ -127,7 +146,7 @@
                     } else {
                         data[element.name] = false;
                     }
-                } else if (element.type == "number") {
+                } else if (element.type == "number" || element.type == "select-one") {
                     data[element.name] = Number(element.value);
                 } else {
                     data[element.name] = element.value;
@@ -142,9 +161,22 @@
         }
 
         function handleFormSubmit(event) {
+            const DISASTER_EXPENSE_TYPES = [
+                "food_loss",
+                "home_or_business_repairs",
+                "temporary_shelter_expenses",
+                "evacuation_expenses",
+                "other",
+            ];
             event.preventDefault();
 
             const form_data = formToJSON(form.elements);
+
+            form_data.disaster_expenses = {};
+            for (let expenses_type of DISASTER_EXPENSE_TYPES) {
+                form_data.disaster_expenses[expenses_type] = form_data[expenses_type];
+                delete form_data[expenses_type];
+            }
 
             var request = new XMLHttpRequest();;
             request.onload = updateResponse;

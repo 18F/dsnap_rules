@@ -15,11 +15,11 @@
     <div class="row">
         <div>
             <form method=POST class="main-form">
-                <label for="disaster_request_no">Disaster:</label>
-                <select list="disaster_list" id="disaster_request_no" name="disaster_request_no" />
+                <label for="disaster_id">Disaster:</label>
+                <select list="disaster_list" id="disaster_id" name="disaster_id" />
                     <option value="">--Please choose an option--</option>
                     {% for disaster in disaster_list %}
-                    <option value="{{ disaster.disaster_request_no }}">{{ disaster }}</option>
+                    <option value="{{ disaster.id }}">{{ disaster }}</option>
                     {% endfor %}
                 </select>
                 <br/>
@@ -127,7 +127,7 @@
                     } else {
                         data[element.name] = false;
                     }
-                } else if (element.type == "number") {
+                } else if (element.type == "number" || element.type == "select-one") {
                     data[element.name] = Number(element.value);
                 } else {
                     data[element.name] = element.value;

@@ -213,34 +213,34 @@ def test_the_and_rule():
     [
         (   # Only food loss; food loss alone allowed
             530, True, 50, 0, 500,
-            True, "Gross income 480 within limit of 500"
+            True, "Disaster Gross Income 480 within limit of 500"
         ),
         (   # Only non-food losses; food loss alone allowed
             530, True, 0, 50, 500,
-            True, "Gross income 480 within limit of 500"
+            True, "Disaster Gross Income 480 within limit of 500"
         ),
         (   # Only food loss; food loss alone not allowed
             530, False, 50, 0, 500,
-            False, "Gross income 530 exceeds limit of 500"
+            False, "Disaster Gross Income 530 exceeds limit of 500"
         ),
         (   # Only non-food losses; food loss alone not allowed
             530, False, 0, 50, 500,
-            True, "Gross income 480 within limit of 500"
+            True, "Disaster Gross Income 480 within limit of 500"
         ),
         (   # Food loss + non-food losses; food loss alone allowed, both needed
             # to meet limit
             530, True, 25, 25, 500,
-            True, "Gross income 480 within limit of 500"
+            True, "Disaster Gross Income 480 within limit of 500"
         ),
         (   # Food loss + non-food losses; food loss alone not allowed, both
             # needed to meet limit
             530, False, 25, 25, 500,
-            True, "Gross income 480 within limit of 500"
+            True, "Disaster Gross Income 480 within limit of 500"
         ),
         (   # Food loss + non-food losses; food loss alone allowed, income too
             # high
             1530, True, 25, 25, 500,
-            False, "Gross income 1480 exceeds limit of 500"
+            False, "Disaster Gross Income 1480 exceeds limit of 500"
         ),
     ])
 @patch('dsnap_rules.income_allotment_calculator.get_calculator')
@@ -300,7 +300,8 @@ def test_DSED_calculation(get_calculator_mock):
                findings=[{
                 "rule": "IncomeAndResourceRule",
                 "succeeded": False,
-                "text": f"Gross income {gross_income} exceeds limit of {LIMIT}"
+                "text": f"Disaster Gross Income {gross_income} exceeds "
+                        f"limit of {LIMIT}"
                 }]),
         disaster=disaster
     )

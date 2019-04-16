@@ -136,13 +136,13 @@ class IncomeAndResourceRule(Rule):
         result = gross_income <= income_limit
         if result:
             finding = (
-                f"Gross income {gross_income} within limit of "
+                f"Disaster Gross Income {gross_income} within limit of "
                 f"{income_limit}"
             )
             metrics = {"allotment": allotment}
         else:
             finding = (
-                f"Gross income {gross_income} exceeds limit of "
+                f"Disaster Gross Income {gross_income} exceeds limit of "
                 f"{income_limit}"
             )
             metrics = {}

@@ -51,7 +51,7 @@ Submit examples from the directory `examples`. E.g.,
 curl -X POST -d @examples/eligible_request.json https://dsnap-rules-demo.app.cloud.gov
 ```
 
-In addition, there is a quick-and-dirty [form](https://dsnap-rules.app.cloud-demo.gov) that can be used to test the application.
+In addition, there is a quick-and-dirty [form](https://dsnap-rules-demo.app.cloud.gov) that can be used to test the application.
 
 ### Running locally
 Create a local PostgreSQL database. Set the environment variable DATABASE_URL to point to this database, e.g.:

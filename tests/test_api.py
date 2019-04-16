@@ -125,7 +125,8 @@ def test_valid_disaster(get_calculator_mock, client):
             {
                 "rule": "IncomeAndResourceRule",
                 "succeeded": True,
-                "text": f"Gross income {payload['total_take_home_income']} "
+                "text": "Disaster Gross Income "
+                        f"{payload['total_take_home_income']} "
                         f"within limit of {LIMIT}"
             },
         ],
@@ -189,7 +190,8 @@ def test_basic_ineligible_payload(get_calculator_mock, client):
             {
                 "rule": "IncomeAndResourceRule",
                 "succeeded": True,
-                "text": f"Gross income {payload['total_take_home_income']} "
+                "text": "Disaster Gross Income "
+                        f"{payload['total_take_home_income']} "
                         f"within limit of {LIMIT}"
             },
         ],
